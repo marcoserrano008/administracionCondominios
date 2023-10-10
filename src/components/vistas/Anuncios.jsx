@@ -31,10 +31,10 @@ const Anuncios = () => {
                                             src={ingresoImagen}
                                             alt="Descripción de la imagen"
                                         />
-                                        <span className="grow ml-6">
+                                        <Link to={'/venta'} className="grow ml-6">
                                             <span className="block text-lg font-semibold hs-tab-active:text-blue-600 text-gray-800 dark:hs-tab-active:text-blue-500 dark:text-gray-200">Venta</span>
                                             <span className="block mt-1 text-gray-800 dark:hs-tab-active:text-gray-200 dark:text-gray-200">Lista detallada de los anuncios.</span>
-                                        </span>
+                                        </Link>
                                     </span>
                                 </button>
 
@@ -45,10 +45,14 @@ const Anuncios = () => {
                                             src={salidaImagen}
                                             alt="Descripción de la imagen"
                                         />
-                                        <span className="grow ml-6">
+                                        <Link to={'/alquiler'} className="grow ml-6">
+                                        <span className="block text-lg font-semibold hs-tab-active:text-blue-600 text-gray-800 dark:hs-tab-active:text-blue-500 dark:text-gray-200">Alquiler</span>
+                                            <span className="block mt-1 text-gray-800 dark:hs-tab-active:text-gray-200 dark:text-gray-200">Compartir una publicacion.</span>
+                                        </Link>
+                                        {/* <span className="grow ml-6">
                                             <span className="block text-lg font-semibold hs-tab-active:text-blue-600 text-gray-800 dark:hs-tab-active:text-blue-500 dark:text-gray-200">Alquiler</span>
                                             <span className="block mt-1 text-gray-800 dark:hs-tab-active:text-gray-200 dark:text-gray-200">Compartir una publicacion.</span>
-                                        </span>
+                                        </span> */}
                                     </span>
                                 </button>
 
@@ -59,10 +63,10 @@ const Anuncios = () => {
                                             src={guardiaImagen}
                                             alt="Descripción de la imagen"
                                         />
-                                        <span className="grow ml-6">
+                                        <Link to={'/anticretico'} className="grow ml-6">
                                             <span className="block text-lg font-semibold hs-tab-active:text-blue-600 text-gray-800 dark:hs-tab-active:text-blue-500 dark:text-gray-200">Anticretico</span>
                                             <span className="block mt-1 text-gray-800 dark:hs-tab-active:text-gray-200 dark:text-gray-200">Ver una lista de los vigilantes.</span>
-                                        </span>
+                                        </Link>
                                     </span>
                                 </button>
                             </nav>
