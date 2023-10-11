@@ -24,6 +24,7 @@ const Visitas = () => {
 
                             {/* <!-- Tab Navs --> */}
                             <nav className="grid gap-4 mt-5 md:mt-10" aria-label="Tabs" role="tablist">
+                                <Link to={'/ingresos'}>
                                 <button type="button" className="hs-tab-active:bg-white hs-tab-active:shadow-md hs-tab-active:hover:border-transparent text-left hover:bg-gray-200 p-4 md:p-5 rounded-xl dark:hs-tab-active:bg-slate-900 dark:hover:bg-gray-700 active" id="tabs-with-card-item-1" data-hs-tab="#tabs-with-card-1" aria-controls="tabs-with-card-1" role="tab">
                                     <span className="flex">
                                         <img
@@ -37,7 +38,8 @@ const Visitas = () => {
                                         </span>
                                     </span>
                                 </button>
-
+                                </Link>
+                                <Link to={'/salidas'}>
                                 <button type="button" className="hs-tab-active:bg-white hs-tab-active:shadow-md hs-tab-active:hover:border-transparent text-left hover:bg-gray-200 p-4 md:p-5 rounded-xl dark:hs-tab-active:bg-slate-900 dark:hover:bg-gray-700" id="tabs-with-card-item-2" data-hs-tab="#tabs-with-card-2" aria-controls="tabs-with-card-2" role="tab">
                                     <span className="flex">
                                         <img
@@ -51,7 +53,9 @@ const Visitas = () => {
                                         </span>
                                     </span>
                                 </button>
+                                </Link>
 
+                                <Link to={'/vigilantes'}>
                                 <button type="button" className="hs-tab-active:bg-white hs-tab-active:shadow-md hs-tab-active:hover:border-transparent text-left hover:bg-gray-200 p-4 md:p-5 rounded-xl dark:hs-tab-active:bg-slate-900 dark:hover:bg-gray-700" id="tabs-with-card-item-3" data-hs-tab="#tabs-with-card-3" aria-controls="tabs-with-card-3" role="tab">
                                     <span className="flex">
                                         <img
@@ -65,6 +69,7 @@ const Visitas = () => {
                                         </span>
                                     </span>
                                 </button>
+                                </Link>
                             </nav>
                             {/* <!-- End Tab Navs --> */}
                         </div>

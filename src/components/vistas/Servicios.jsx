@@ -26,6 +26,7 @@ const Servicios = () => {
 
                             {/* <!-- Tab Navs --> */}
                             <nav className="grid gap-4 mt-5 md:mt-10" aria-label="Tabs" role="tablist">
+                                <Link to={'/serviciosDisponibles'}>
                                 <button type="button" className="hs-tab-active:bg-white hs-tab-active:shadow-md hs-tab-active:hover:border-transparent text-left hover:bg-gray-200 p-4 md:p-5 rounded-xl dark:hs-tab-active:bg-slate-900 dark:hover:bg-gray-700 active" id="tabs-with-card-item-1" data-hs-tab="#tabs-with-card-1" aria-controls="tabs-with-card-1" role="tab">
                                     <span className="flex">
                                         <img
@@ -33,13 +34,15 @@ const Servicios = () => {
                                             src={ingresoImagen}
                                             alt="Descripción de la imagen"
                                         />
-                                        <span className="grow ml-6">
+                                        <span to={'/serviciosDisponibles'} className="grow ml-6">
                                             <span className="block text-lg font-semibold hs-tab-active:text-blue-600 text-gray-800 dark:hs-tab-active:text-blue-500 dark:text-gray-200">Servicios Disponibles</span>
                                             <span className="block mt-1 text-gray-800 dark:hs-tab-active:text-gray-200 dark:text-gray-200">Ver una lista de los servicios ofrecidos.</span>
                                         </span>
                                     </span>
                                 </button>
+                                </Link>
 
+                                <Link to={'/registrarPago'}>
                                 <button type="button" className="hs-tab-active:bg-white hs-tab-active:shadow-md hs-tab-active:hover:border-transparent text-left hover:bg-gray-200 p-4 md:p-5 rounded-xl dark:hs-tab-active:bg-slate-900 dark:hover:bg-gray-700" id="tabs-with-card-item-2" data-hs-tab="#tabs-with-card-2" aria-controls="tabs-with-card-2" role="tab">
                                     <span className="flex">
                                         <img
@@ -47,13 +50,14 @@ const Servicios = () => {
                                             src={salidaImagen}
                                             alt="Descripción de la imagen"
                                         />
-                                        <span className="grow ml-6">
+                                        <span to={'/registrarPago'} className="grow ml-6">
                                             <span className="block text-lg font-semibold hs-tab-active:text-blue-600 text-gray-800 dark:hs-tab-active:text-blue-500 dark:text-gray-200">Registrar Pago</span>
                                             <span className="block mt-1 text-gray-800 dark:hs-tab-active:text-gray-200 dark:text-gray-200">Registrar un pago realizado por un residente por un servicio pendiente.</span>
                                         </span>
                                     </span>
                                 </button>
-
+                                </Link>
+                                <Link to={'/otorgarServicio'}>
                                 <button type="button" className="hs-tab-active:bg-white hs-tab-active:shadow-md hs-tab-active:hover:border-transparent text-left hover:bg-gray-200 p-4 md:p-5 rounded-xl dark:hs-tab-active:bg-slate-900 dark:hover:bg-gray-700" id="tabs-with-card-item-3" data-hs-tab="#tabs-with-card-3" aria-controls="tabs-with-card-3" role="tab">
                                     <span className="flex">
                                         <img
@@ -67,6 +71,7 @@ const Servicios = () => {
                                         </span>
                                     </span>
                                 </button>
+                                </Link>
                             </nav>
                             {/* <!-- End Tab Navs --> */}
                         </div>
