@@ -34,9 +34,17 @@ const Personal = () => {
                                 <h3 className="text-3xl text-center font-semibold text-gray-800 dark:text-gray-300 dark:group-hover:text-white">
                                     Personal
                                 </h3>
+                                <Link to={'/nuevoPersonal'}>
                                 <Button className='bg-slate-200 w-full h-12 text-lg mt-2 mb-1 hover:bg-slate-400 hover:shadow-lg transition-all duration-300 '>Nuevo</Button>
+                                </Link>
+
+                                <Link to={'/listaPersonal'}>
                                 <Button className='bg-slate-200 w-full h-12 text-lg mt-2 mb-1 hover:bg-slate-400 hover:shadow-lg transition-all duration-300'>Ver Lista</Button>
+                                </Link>
+                                
+                                <Link to={'/reportePersonal'}>
                                 <Button className='bg-slate-200 w-full h-12 text-lg mt-2 mb-1 hover:bg-slate-400 hover:shadow-lg transition-all duration-300'>Reporte</Button>
+                                </Link>
                             </div>
                         </div>
                     </div>
@@ -53,9 +61,17 @@ const Personal = () => {
                                 <h3 className="text-3xl text-center font-semibold text-gray-800 dark:text-gray-300 dark:group-hover:text-white">
                                 Ingresos y salidas del personal
                                 </h3>
+                                <Link to={'/ingresoPersonal'}>
                                 <Button className='bg-slate-200 w-full h-12 text-lg mt-2 mb-1 hover:bg-slate-400 hover:shadow-lg transition-all duration-300 '>Ingresos</Button>
+                                </Link>
+                                
+                                <Link to={'/salidaPersonal'}>
                                 <Button className='bg-slate-200 w-full h-12 text-lg mt-2 mb-1 hover:bg-slate-400 hover:shadow-lg transition-all duration-300'>Salidas</Button>
+                                </Link>
+                                
+                                <Link to={'/reportePersonal'}>
                                 <Button className='bg-slate-200 w-full h-12 text-lg mt-2 mb-1 hover:bg-slate-400 hover:shadow-lg transition-all duration-300'>Reporte</Button>
+                                </Link>
                             </div>
                         </div>
                     </div>

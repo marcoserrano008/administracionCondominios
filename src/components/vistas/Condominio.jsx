@@ -8,7 +8,7 @@ const Condominio = () => {
     return (
         <>
 
-        <Header></Header>
+            <Header></Header>
 
             {/* <!-- Card Blog --> */}
             <div className="max-w-[75rem] px-1 py-4 sm:px-6 lg:px-8 lg:py-16 mx-auto lg:mt-[-20px]">
@@ -30,8 +30,14 @@ const Condominio = () => {
                                 <h3 className="text-3xl text-center font-semibold text-gray-800 dark:text-gray-300 dark:group-hover:text-white">
                                     Edificios
                                 </h3>
-                                <Button className='bg-slate-200 w-full h-12 text-lg mt-2 mb-1 hover:bg-slate-400 hover:shadow-lg transition-all duration-300 '>Registrar Edificio</Button>
-                                <Button className='bg-slate-200 w-full h-12 text-lg mt-2 mb-1 hover:bg-slate-400 hover:shadow-lg transition-all duration-300'>Ver Edificios</Button>
+                                <Link to={'/registrarEdificio'}>
+                                    <Button className='bg-slate-200 w-full h-12 text-lg mt-2 mb-1 hover:bg-slate-400 hover:shadow-lg transition-all duration-300 '>Registrar Edificio</Button>
+                                </Link>
+
+                                <Link to={'/verEdificios'}>
+                                    <Button className='bg-slate-200 w-full h-12 text-lg mt-2 mb-1 hover:bg-slate-400 hover:shadow-lg transition-all duration-300'>Ver Edificios</Button>
+
+                                </Link>
                             </div>
                         </div>
                     </div>
@@ -48,9 +54,17 @@ const Condominio = () => {
                                 <h3 className="text-3xl text-center font-semibold text-gray-800 dark:text-gray-300 dark:group-hover:text-white">
                                     Departamentos
                                 </h3>
-                                <Button className='bg-slate-200 w-full h-12 text-lg mt-2 mb-1 hover:bg-slate-400 hover:shadow-lg transition-all duration-300 '>Registrar Departamento</Button>
-                                <Button className='bg-slate-200 w-full h-12 text-lg mt-2 mb-1 hover:bg-slate-400 hover:shadow-lg transition-all duration-300'>Ver Departamentos</Button>
-                                <Button className='bg-slate-200 w-full h-12 text-lg mt-2 mb-1 hover:bg-slate-400 hover:shadow-lg transition-all duration-300'>Propietarios</Button>
+                                <Link to={'/registrarDepartamento'}>
+                                    <Button className='bg-slate-200 w-full h-12 text-lg mt-2 mb-1 hover:bg-slate-400 hover:shadow-lg transition-all duration-300 '>Registrar Departamento</Button>
+                                </Link>
+
+                                <Link to={'/verDepartamentos'}>
+                                    <Button className='bg-slate-200 w-full h-12 text-lg mt-2 mb-1 hover:bg-slate-400 hover:shadow-lg transition-all duration-300'>Ver Departamentos</Button>
+                                </Link>
+
+                                <Link to={'/propietariosDepartamentos'}>
+                                    <Button className='bg-slate-200 w-full h-12 text-lg mt-2 mb-1 hover:bg-slate-400 hover:shadow-lg transition-all duration-300'>Propietarios</Button>
+                                </Link>
                             </div>
                         </div>
                     </div>
@@ -67,9 +81,18 @@ const Condominio = () => {
                                 <h3 className="text-3xl text-center font-semibold text-gray-800 dark:text-gray-300 dark:group-hover:text-white">
                                     Casas
                                 </h3>
-                                <Button className='bg-slate-200 w-full h-12 text-lg mt-2 mb-1 hover:bg-slate-400 hover:shadow-lg transition-all duration-300 '>Registrar Casa</Button>
-                                <Button className='bg-slate-200 w-full h-12 text-lg mt-2 mb-1 hover:bg-slate-400 hover:shadow-lg transition-all duration-300'>Ver Casas</Button>
-                                <Button className='bg-slate-200 w-full h-12 text-lg mt-2 mb-1 hover:bg-slate-400 hover:shadow-lg transition-all duration-300'>Propietarios</Button>
+                                <Link to={'/registrarCasa'}>
+                                    <Button className='bg-slate-200 w-full h-12 text-lg mt-2 mb-1 hover:bg-slate-400 hover:shadow-lg transition-all duration-300 '>Registrar Casa</Button>
+                                </Link>
+
+                                <Link to={'/verCasas'}>
+                                    <Button className='bg-slate-200 w-full h-12 text-lg mt-2 mb-1 hover:bg-slate-400 hover:shadow-lg transition-all duration-300'>Ver Casas</Button>
+                                </Link>
+
+                                <Link to={'/propietariosCasas'}>
+                                    <Button className='bg-slate-200 w-full h-12 text-lg mt-2 mb-1 hover:bg-slate-400 hover:shadow-lg transition-all duration-300'>Propietarios</Button>
+                                </Link>
+
                             </div>
                         </div>
                     </div>
@@ -80,7 +103,7 @@ const Condominio = () => {
             </div>
             {/* <!-- End Card Blog --> */}
 
-        <Footer></Footer>
+            <Footer></Footer>
 
         </>
     )
