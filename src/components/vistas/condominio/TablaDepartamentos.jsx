@@ -31,17 +31,20 @@ import { data, states } from './makeData';
 
 const fetchBuildings = async () => {
     const db = getFirestore(app);
-    const edificiosCol = collection(db, "edificios");
-    const edificioSnapshot = await getDocs(edificiosCol);
-    return edificioSnapshot.docs.map(doc => {
+    const departamentosCol = collection(db, "departamentos");
+    const departamentoSnapshot = await getDocs(departamentosCol);
+    return departamentoSnapshot.docs.map(doc => {
         const data = doc.data();
         return {
-            nombre_edificio: data.nombre_edificio,
-            cantidad_pisos: data.cantidad_pisos,
-            direccion: data.direccion,
+            edificio: data.edificio,
+            numeroDepartamento: data.numeroDepartamento,
+            estado:data.estado,
+            telefono: data.telefono,
             celular: data.celular,
-            correo: data.correo,
-            telefono: `${data.telefono}`,
+            dormitorios: data.dormitorios,
+            baños: data.baños,
+            garaje: data.garaje,
+            superficie: data.superficie,
             id: doc.id
         };
     });
@@ -50,7 +53,7 @@ const fetchBuildings = async () => {
 
 
 
-const TablaEdificios = () => {
+const TablaDepartamentos = () => {
     const [createModalOpen, setCreateModalOpen] = useState(false);
     const [tableData, setTableData] = useState([]);
     const [validationErrors, setValidationErrors] = useState({});
@@ -60,8 +63,8 @@ const TablaEdificios = () => {
     useEffect(() => {
         const fetchData = async () => {
             setIsLoading(true);
-            const edificios = await fetchBuildings();
-            setTableData(edificios);
+            const departamentos = await fetchBuildings();
+            setTableData(departamentos);
             setIsLoading(false);
     
         };
@@ -77,8 +80,8 @@ const TablaEdificios = () => {
 
     const updateBuilding = async (id, updatedBuilding) => {
         const db = getFirestore(app);
-        const edificioDoc = doc(db, "edificios", id);
-        await updateDoc(edificioDoc, updatedBuilding);
+        const departamentosDoc = doc(db, "departamentos", id);
+        await updateDoc(departamentosDoc, updatedBuilding);
     };
 
     
@@ -102,14 +105,14 @@ const TablaEdificios = () => {
 
     const deleteBuilding = async (id) => {
         const db = getFirestore(app);
-        const edificioDoc = doc(db, "edificios", id);
-        await deleteDoc(edificioDoc);
+        const departamentosDoc = doc(db, "edificios", id);
+        await deleteDoc(departamentosDoc);
     };
 
 
     const handleDeleteRow = useCallback(
         async (row) => {
-            if (!confirm(`Are you sure you want to delete ${row.getValue('nombre_edificio')}`)) {
+            if (!confirm(`Are you sure you want to delete ${row.getValue('numeroDepartamento')}`)) {
                 return;
             }
             await deleteBuilding(row.original.id);
@@ -136,22 +139,29 @@ const TablaEdificios = () => {
 
     const handleExportData = async () => {
        const  headers = createHeaders([
-        'nombre_edificio',
-        'cantidad_pisos',
-        'direccion',
-        'celular',
-        'correo',
+        'edificio',
+        'numeroDepartamento',
+        'estado',
         'telefono',
+        'celular',
+        'dormitorios',
+        'baños',
+        'garaje',
+        'superficie',
+
        ]);
        const doc = new jsPDF({orientation: 'landscape'});
        const tData = tableData?.map((row) => ({
         ...row,
-        nombre_edificio: String(row.nombre_edificio),
-        cantidad_pisos: String(row.cantidad_pisos),
-        direccion: String(row.direccion),
-        celular: String(row.celular),
-        correo: String(row.correo),
+        edificio: String(row.edificio),
+        numeroDepartamento: String(row.numeroDepartamento),
+        estado: String(row.estado),
         telefono: String(row.telefono),
+        celular: String(row.celular),
+        dormitorios: String(row.dormitorios),
+        baños: String(row.baños),
+        garaje: String(row.garaje),
+        superficie: String(row.superficie),
        }))
 
        doc.table(1,1,tData,headers,{autoSize:true})
@@ -167,9 +177,7 @@ const TablaEdificios = () => {
                 onBlur: (event) => {
                     let isValid = validateRequired(event.target.value);
 
-                    if (cell.column.accessorKey === 'correo') {
-                        isValid = validateEmail(event.target.value);
-                    } else if (cell.column.accessorKey === 'telefono') {
+                    if (cell.column.accessorKey === 'telefono') {
                         isValid = validatePhoneNumber(event.target.value); // Asumo que tienes una función de validación para teléfonos, si no la tienes, puedes usar validateRequired o crear una.
                     }
 
@@ -195,24 +203,31 @@ const TablaEdificios = () => {
     const columns = useMemo(
         () => [
             {
-                accessorKey: 'nombre_edificio',
-                header: 'Nombre del edificio',
+                accessorKey: 'edificio',
+                header: 'Edificio',
                 size: 140,
                 muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
                     ...getCommonEditTextFieldProps(cell),
                 }),
             },
             {
-                accessorKey: 'cantidad_pisos',
-                header: 'Pisos',
+                accessorKey: 'numeroDepartamento',
+                header: 'Numero de Departamento',
                 size: 140,
                 muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
                     ...getCommonEditTextFieldProps(cell),
                 }),
             },
             {
-                accessorKey: 'direccion',
-                header: 'Direccion',
+                accessorKey: 'estado',
+                header: 'Estado',
+                muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
+                    ...getCommonEditTextFieldProps(cell),
+                }),
+            },
+            {
+                accessorKey: 'telefono',
+                header: 'Telefono',
                 muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
                     ...getCommonEditTextFieldProps(cell),
                 }),
@@ -225,16 +240,34 @@ const TablaEdificios = () => {
                 }),
             },
             {
-                accessorKey: 'correo',
-                header: 'Correo',
+                accessorKey: 'dormitorios',
+                header: 'Dormitorios',
+                size: 140,
                 muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
                     ...getCommonEditTextFieldProps(cell),
-                    type: 'email',
+                    type: 'number',
                 }),
             },
             {
-                accessorKey: 'telefono',
-                header: 'Telefono',
+                accessorKey: 'baños',
+                header: 'Baños',
+                size: 140,
+                muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
+                    ...getCommonEditTextFieldProps(cell),
+                    type: 'number',
+                }),
+            },
+            {
+                accessorKey: 'garaje',
+                header: 'Garaje',
+                size: 140,
+                muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
+                    ...getCommonEditTextFieldProps(cell),
+                }),
+            },
+            {
+                accessorKey: 'superficie',
+                header: 'Superficie [m²]',
                 size: 140,
                 muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
                     ...getCommonEditTextFieldProps(cell),
@@ -260,7 +293,7 @@ const TablaEdificios = () => {
                 columns={columns}
                 data={tableData}
                 editingMode="modal" //default
-
+                initialState={{ columnVisibility: { baños: false, garaje: false } }}
                 localization={MRT_Localization_ES}
                 state={{ isLoading: isLoading }}
                 enableRowNumbers
@@ -301,7 +334,7 @@ const TablaEdificios = () => {
     );
 };
 
-//TablaEdificios of creating a mui dialog modal for creating new rows
+//TablaDepartamentos of creating a mui dialog modal for creating new rows
 export const CreateNewAccountModal = ({ open, columns, onClose, onSubmit }) => {
     const [values, setValues] = useState(() =>
         columns.reduce((acc, column) => {
@@ -366,4 +399,4 @@ const validatePhoneNumber = (phoneNumber) =>
     !!phoneNumber.match(/^\d{1,15}$/);
 
 
-export default TablaEdificios;
+export default TablaDepartamentos;

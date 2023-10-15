@@ -4,10 +4,11 @@ import Footer from '../../reusables/Footer'
 import {collection, addDoc } from "firebase/firestore";
 
 import { db } from "../../../firebase";
+import { useNavigate } from 'react-router-dom';
 
 const RegistrarEdificio = () => {
 
-
+  const navigate = useNavigate();
   const handleOnSubmit = async (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
@@ -20,10 +21,16 @@ const RegistrarEdificio = () => {
         celular: formData.get("celular"),
         telefono: formData.get("telefono"),
         correo: formData.get("correo")
+
+        
       });
       console.log("Document written with ID: ", docRef.id);
+      alert("Registro satisfactorio!");
+      navigate('/condominio');
+      
     } catch (error) {
       console.error("Error adding document: ", error);
+      alert("Error: no esta conectado!");
     }
   };
 
@@ -67,37 +74,37 @@ const RegistrarEdificio = () => {
                 {/* <!-- Grid --> */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-6">
                   <div>
-                    <label for="nombre_edificio" className="block text-sm text-gray-700 font-medium dark:text-white">Nombre del edificio</label>
+                    <label htmlFor="nombre_edificio" className="block text-sm text-gray-700 font-medium dark:text-white">Nombre del edificio</label>
                     <input type="text" name="nombre_edificio" id="nombre_edificio" value={form.nombre_edificio} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
                   </div>
 
                   <div>
-                    <label for="cantidad_pisos" className="block text-sm text-gray-700 font-medium dark:text-white">Numero de pisos</label>
+                    <label htmlFor="cantidad_pisos" className="block text-sm text-gray-700 font-medium dark:text-white">Numero de pisos</label>
                     <input type="number" name="cantidad_pisos" id="cantidad_pisos" value={form.cantidad_pisos} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
                   </div>
                 </div>
                 {/* <!-- End Grid --> */}
 
                 <div>
-                  <label for="direccion" className="block text-sm text-gray-700 font-medium dark:text-white">Direccion</label>
+                  <label htmlFor="direccion" className="block text-sm text-gray-700 font-medium dark:text-white">Direccion</label>
                   <input type="text" name="direccion" id="direccion" value={form.direccion} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
                 </div>
 
                 {/* <!-- Grid --> */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-6">
                   <div>
-                    <label for="celular" className="block text-sm text-gray-700 font-medium dark:text-white">Celular</label>
+                    <label htmlFor="celular" className="block text-sm text-gray-700 font-medium dark:text-white">Celular</label>
                     <input type="number" name="celular" id="celular" value={form.celular} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
                   </div>
 
                   <div>
-                    <label for="telefono" className="block text-sm text-gray-700 font-medium dark:text-white">Telefono</label>
+                    <label htmlFor="telefono" className="block text-sm text-gray-700 font-medium dark:text-white">Telefono</label>
                     <input type="number" name="telefono" id="telefono" value={form.telefono} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
                   </div>
                 </div>
                 {/* <!-- End Grid --> */}
                 <div>
-                <label for="correo" className="block text-sm text-gray-700 font-medium dark:text-white">Correo Electronico</label>
+                <label htmlFor="correo" className="block text-sm text-gray-700 font-medium dark:text-white">Correo Electronico</label>
                 <input type="email" name="correo" id="correo" value={form.correo} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
               </div>
 

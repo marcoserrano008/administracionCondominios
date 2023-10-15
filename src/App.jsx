@@ -42,6 +42,7 @@ import Ingresos from './components/vistas/visitas/Ingresos'
 import Salidas from './components/vistas/visitas/Salidas'
 import Vigilantes from './components/vistas/visitas/Vigilantes'
 import OtorgarServicio from './components/vistas/servicios/OtorgarServicio';
+import RegistrarServicio from './components/vistas/servicios/RegistrarServicio';
 
 function App() {
   return (
@@ -80,7 +81,7 @@ function App() {
           <Route path='/ingresos' element={<Ingresos/>} />
           <Route path='/salidas' element={<Salidas />} />
           <Route path='/vigilantes' element={<Vigilantes/>} />
-          
+          <Route path='/registrarServicio' element={<RegistrarServicio/>}/>
 
         </Routes>
       </AuthProvider>

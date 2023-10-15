@@ -1,7 +1,7 @@
 import React from 'react'
 import Header from '../../reusables/Header'
 import Footer from '../../reusables/Footer'
-import TablaEdificios from './tablaEdificios'
+import TablaDepartamentos from './TablaDepartamentos'
 
 const VerDepartamentos = () => {
   return (
@@ -36,7 +36,7 @@ const VerDepartamentos = () => {
                   </div>
                 </div>
 
-                <TablaEdificios></TablaEdificios>
+                <TablaDepartamentos></TablaDepartamentos>
               </div>
 
             </div>
