@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { Link } from 'react-router-dom';
 import { Button } from '../ui/button';
+import Header from '../reusables/Header';
+import Footer from '../reusables/Footer';
 // Asegúrate de importar la configuración de firebase
 
 function Login() {
@@ -50,8 +52,8 @@ function Login() {
   return (
 
     <>
-
-      <div className="dark:bg-slate-900 bg-gray-100 flex h-screen items-center py-16">
+      <Header></Header>
+      <div className="dark:bg-slate-900  flex h-full items-center py-16">
         <div className="w-full max-w-md mx-auto p-6">
           <div className="mt-7 bg-white border border-gray-200 rounded-xl shadow-sm dark:bg-gray-800 dark:border-gray-700">
             <div className="p-4 sm:p-7">
@@ -113,13 +115,6 @@ function Login() {
                       <Button className='bg-slate-200 hover:bg-slate-300' type="submit" >
                         Iniciar Sesion
                       </Button>
-
-                      <Link to='/' className="block w-full">
-                        <Button className='bg-red-200 hover:bg-red-300 w-full'>
-                          Regresar
-                        </Button>
-                      </Link>
-
                       {/* <button type="submit" className="...tus clases aquí...">Iniciar Sesion</button> */}
                     </div>
                   </form>
@@ -133,7 +128,7 @@ function Login() {
         </div>
       </div>
 
-
+    <Footer></Footer>
 
     </>
 

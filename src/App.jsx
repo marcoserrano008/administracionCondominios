@@ -4,7 +4,7 @@ import Login from './components/login/Login';
 import SignUp from './components/login/SignUp';
 import Dashboard from './components/login/Dashboard';
 import PrivateRoute from './components/login/PrivateRoute';
-import { AuthProvider } from './auth/AuthContext';
+
 import Landing from './components/vistas/Landing';
 import Landing2 from './components/vistas/Landing2';
 import Servicios from './components/vistas/Servicios';
@@ -43,49 +43,55 @@ import Salidas from './components/vistas/visitas/Salidas'
 import Vigilantes from './components/vistas/visitas/Vigilantes'
 import OtorgarServicio from './components/vistas/servicios/OtorgarServicio';
 import RegistrarServicio from './components/vistas/servicios/RegistrarServicio';
+import RegistrarResidente from './components/vistas/condominio/registrarResidente';
+import GestorAnuncios from './components/vistas/anuncios/GestorAnuncios';
 
+import { AuthProvider } from './auth/AuthContext';
 function App() {
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/" element={<Landing />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-          <Route path='/servicios' element={<Servicios />} />
-          <Route path='/condominio' element={<Condominio />} />
-          <Route path='/personal' element={<Personal/>} />
-          <Route path='/visitas' element={<Visitas/>} />
-          <Route path='/anuncios' element={<Anuncios/>} />
-          <Route path='/alquiler' element={<Alquiler/>} />
-          <Route path='/anticretico' element={<Anticretico/>} />
-          <Route path='/venta' element={<Venta/>} />
-          <Route path='/propietariosCasas' element={<PropietariosCasas/>} />
-          <Route path='/propietariosDepartamentos' element={<PropietariosDepartamentos/>} />
-          <Route path='/registrarCasa' element={<RegistrarCasa/>} />
-          <Route path='/registrarDepartamento' element={<RegistrarDepartamento/>} />
-          <Route path='/registrarEdificio' element={<RegistrarEdificio/>} />
-          <Route path='/verCasas' element={<VerCasas/>} />
-          <Route path='/verDepartamentos' element={<VerDepartamentos/>} />
-          <Route path='/verEdificios' element={<VerEdificios/>} />
-          <Route path='/ingresoPersonal' element={<IngresoPersonal/>} />
-          <Route path='/listaPersonal' element={<ListaPersonal/>} />
-          <Route path='/nuevoPersonal' element={<NuevoPersonal/>} />
-          <Route path='/reporteIngresoSalida' element={<ReporteIngresoSalida/>} />
-          <Route path='/reportePersonal' element={<ReportePersonal />} />
-          <Route path='/salidaPersonal' element={<SalidaPersonal/>} />
-          <Route path='/otorgarServicio' element={<OtorgarServicio />} />
-          <Route path='/registrarPago' element={<RegistrarPago/>} />
-          <Route path='/serviciosDisponibles' element={<ServiciosDisponibles/>} />
-          <Route path='/ingresos' element={<Ingresos/>} />
-          <Route path='/salidas' element={<Salidas />} />
-          <Route path='/vigilantes' element={<Vigilantes/>} />
-          <Route path='/registrarServicio' element={<RegistrarServicio/>}/>
 
-        </Routes>
-      </AuthProvider>
-    </BrowserRouter>
+      <BrowserRouter>
+        <AuthProvider>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/" element={<Landing />} />
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+            <Route path='/servicios' element={<Servicios />} />
+            <Route path='/condominio' element={<Condominio />} />
+            <Route path='/personal' element={<Personal />} />
+            <Route path='/visitas' element={<Visitas />} />
+            <Route path='/anuncios' element={<Anuncios />} />
+            <Route path='/alquiler' element={<Alquiler />} />
+            <Route path='/anticretico' element={<Anticretico />} />
+            <Route path='/venta' element={<Venta />} />
+            <Route path='/propietariosCasas' element={<PropietariosCasas />} />
+            <Route path='/propietariosDepartamentos' element={<PropietariosDepartamentos />} />
+            <Route path='/registrarCasa' element={<RegistrarCasa />} />
+            <Route path='/registrarDepartamento' element={<RegistrarDepartamento />} />
+            <Route path='/registrarEdificio' element={<RegistrarEdificio />} />
+            <Route path='/verCasas' element={<VerCasas />} />
+            <Route path='/verDepartamentos' element={<VerDepartamentos />} />
+            <Route path='/verEdificios' element={<VerEdificios />} />
+            <Route path='/ingresoPersonal' element={<IngresoPersonal />} />
+            <Route path='/listaPersonal' element={<ListaPersonal />} />
+            <Route path='/nuevoPersonal' element={<NuevoPersonal />} />
+            <Route path='/reporteIngresoSalida' element={<ReporteIngresoSalida />} />
+            <Route path='/reportePersonal' element={<ReportePersonal />} />
+            <Route path='/salidaPersonal' element={<SalidaPersonal />} />
+            <Route path='/otorgarServicio' element={<OtorgarServicio />} />
+            <Route path='/registrarPago' element={<RegistrarPago />} />
+            <Route path='/serviciosDisponibles' element={<ServiciosDisponibles />} />
+            <Route path='/ingresos' element={<Ingresos />} />
+            <Route path='/salidas' element={<Salidas />} />
+            <Route path='/vigilantes' element={<Vigilantes />} />
+            <Route path='/registrarServicio' element={<RegistrarServicio />} />
+            <Route path='/registrarPropietario' element={<RegistrarResidente />} />
+            <Route path='/gestorAnuncios' element={<GestorAnuncios />} />
+          </Routes>
+        </AuthProvider>
+      </BrowserRouter>
+    
   );
 }
 

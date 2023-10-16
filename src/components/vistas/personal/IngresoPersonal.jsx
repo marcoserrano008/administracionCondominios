@@ -21,6 +21,7 @@ const IngresoPersonal = () => {
         cargo: form.cargo,
         nombre: form.nombre,
         fechaHoraIngreso: fechaHoraIngreso,
+        fechaHoraSalida: 'No registrado'
       });
       console.log("Document written with ID: ", docRef.id);
       console.log(docRef.idIngreso)

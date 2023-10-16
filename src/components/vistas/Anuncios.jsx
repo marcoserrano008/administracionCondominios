@@ -7,14 +7,20 @@ import ingresoImagen from '../../assets/img/ingreso.png'
 import salidaImagen from '../../assets/img/salida.png'
 import guardiaImagen from '../../assets/img/guardia.png'
 import condominioImagen from '../../assets/img/condominio.jpg'
+import anuncioImagen from '../../assets/img/anunciosImagen.png'
+
+import publicarAnuncio from '../../assets/img/publicarAnuncio.svg'
+import gestorAnuncios from '../../assets/img/gestorAnuncios.svg'
+import verPublicaciones from '../../assets/img/verPublicaciones.svg'
+
 const Anuncios = () => {
     return (
         <>
             <Header></Header>
             {/* <!-- Features --> */}
             <div className='flex justify-center items-center min-h-auto lg:mt-20' >
-                <div class="max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto bg-red-200">
-                    <div class="relative p-6 md:p-16">
+                <div className="max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-aut">
+                    <div className="relative p-6 md:p-16">
                         {/* <!-- Grid --> */}
                         <div className="relative z-10 lg:grid lg:grid-cols-12 lg:gap-16 lg:items-center ">
                             <div className="mb-10 lg:mb-0 lg:col-span-6 lg:col-start-8 lg:order-2">
@@ -25,30 +31,32 @@ const Anuncios = () => {
                                 {/* <!-- Tab Navs --> */}
                                 <nav className="grid gap-4 mt-5 md:mt-10" aria-label="Tabs" role="tablist">
                                     <Link to={'/venta'}>
-                                        <button type="button" className="hs-tab-active:bg-white hs-tab-active:shadow-md hs-tab-active:hover:border-transparent text-left hover:bg-gray-200 p-4 md:p-5 rounded-xl dark:hs-tab-active:bg-slate-900 dark:hover:bg-gray-700 active" id="tabs-with-card-item-1" data-hs-tab="#tabs-with-card-1" aria-controls="tabs-with-card-1" role="tab">
+                                        <button type="button" className="hs-tab-active:bg-white w-full hs-tab-active:shadow-md hs-tab-active:hover:border-transparent text-left hover:bg-gray-200 p-4 md:p-5 rounded-xl dark:hs-tab-active:bg-slate-900 dark:hover:bg-gray-700 active" id="tabs-with-card-item-1" data-hs-tab="#tabs-with-card-1" aria-controls="tabs-with-card-1" role="tab">
                                             <span className="flex">
                                                 <img
                                                     className="flex-shrink-0 mt-2 h-6 w-6 md:w-7 md:h-7 hs-tab-active:text-blue-600 text-gray-800 dark:hs-tab-active:text-blue-500 dark:text-gray-200"
-                                                    src={ingresoImagen}
+                                                    src={publicarAnuncio}
                                                     alt="Descripción de la imagen"
                                                 />
                                                 <span to={'/venta'} className="grow ml-6">
-                                                    <span className="block text-lg font-semibold hs-tab-active:text-blue-600 text-gray-800 dark:hs-tab-active:text-blue-500 dark:text-gray-200">Venta</span>
-                                                    <span className="block mt-1 text-gray-800 dark:hs-tab-active:text-gray-200 dark:text-gray-200">Lista detallada de los anuncios.</span>
+                                                    <span className="block text-lg font-semibold hs-tab-active:text-blue-600 text-gray-800 dark:hs-tab-active:text-blue-500 dark:text-gray-200">Publicar Anuncio</span>
+                                                    <span className="block mt-1 text-gray-800 dark:hs-tab-active:text-gray-200 dark:text-gray-200">Publicar Anuncio de compra, venta o alquiler</span>
                                                 </span>
                                             </span>
                                         </button>
                                     </Link>
-                                    <button type="button" className="hs-tab-active:bg-white hs-tab-active:shadow-md hs-tab-active:hover:border-transparent text-left hover:bg-gray-200 p-4 md:p-5 rounded-xl dark:hs-tab-active:bg-slate-900 dark:hover:bg-gray-700" id="tabs-with-card-item-2" data-hs-tab="#tabs-with-card-2" aria-controls="tabs-with-card-2" role="tab">
+
+                                    <Link to={'/gestorAnuncios'}>
+                                    <button type="button" className="hs-tab-active:bg-white w-full hs-tab-active:shadow-md hs-tab-active:hover:border-transparent text-left hover:bg-gray-200 p-4 md:p-5 rounded-xl dark:hs-tab-active:bg-slate-900 dark:hover:bg-gray-700" id="tabs-with-card-item-2" data-hs-tab="#tabs-with-card-2" aria-controls="tabs-with-card-2" role="tab">
                                         <span className="flex">
                                             <img
                                                 className="flex-shrink-0 mt-2 h-6 w-6 md:w-7 md:h-7 hs-tab-active:text-blue-600 text-gray-800 dark:hs-tab-active:text-blue-500 dark:text-gray-200"
-                                                src={salidaImagen}
+                                                src={gestorAnuncios}
                                                 alt="Descripción de la imagen"
                                             />
                                             <span to={'/alquiler'} className="grow ml-6">
-                                                <span className="block text-lg font-semibold hs-tab-active:text-blue-600 text-gray-800 dark:hs-tab-active:text-blue-500 dark:text-gray-200">Alquiler</span>
-                                                <span className="block mt-1 text-gray-800 dark:hs-tab-active:text-gray-200 dark:text-gray-200">Compartir una publicacion.</span>
+                                                <span className="block text-lg font-semibold hs-tab-active:text-blue-600 text-gray-800 dark:hs-tab-active:text-blue-500 dark:text-gray-200">Gestor de Anuncios</span>
+                                                <span className="block mt-1 text-gray-800 dark:hs-tab-active:text-gray-200 dark:text-gray-200">Gestionar los anuncios publicados.</span>
                                             </span>
                                             {/* <span className="grow ml-6">
                                             <span className="block text-lg font-semibold hs-tab-active:text-blue-600 text-gray-800 dark:hs-tab-active:text-blue-500 dark:text-gray-200">Alquiler</span>
@@ -56,18 +64,19 @@ const Anuncios = () => {
                                         </span> */}
                                         </span>
                                     </button>
-                                    
+                                    </Link>
+
                                     <Link to={'/anticretico'}>
-                                        <button type="button" className="hs-tab-active:bg-white hs-tab-active:shadow-md hs-tab-active:hover:border-transparent text-left hover:bg-gray-200 p-4 md:p-5 rounded-xl dark:hs-tab-active:bg-slate-900 dark:hover:bg-gray-700" id="tabs-with-card-item-3" data-hs-tab="#tabs-with-card-3" aria-controls="tabs-with-card-3" role="tab">
+                                        <button type="button" className="hs-tab-active:bg-white w-full hs-tab-active:shadow-md hs-tab-active:hover:border-transparent text-left hover:bg-gray-200 p-4 md:p-5 rounded-xl dark:hs-tab-active:bg-slate-900 dark:hover:bg-gray-700" id="tabs-with-card-item-3" data-hs-tab="#tabs-with-card-3" aria-controls="tabs-with-card-3" role="tab">
                                             <span className="flex">
                                                 <img
                                                     className="flex-shrink-0 mt-2 h-6 w-6 md:w-7 md:h-7 hs-tab-active:text-blue-600 text-gray-800 dark:hs-tab-active:text-blue-500 dark:text-gray-200"
-                                                    src={guardiaImagen}
+                                                    src={verPublicaciones}
                                                     alt="Descripción de la imagen"
                                                 />
                                                 <span to={'/anticretico'} className="grow ml-6">
-                                                    <span className="block text-lg font-semibold hs-tab-active:text-blue-600 text-gray-800 dark:hs-tab-active:text-blue-500 dark:text-gray-200">Anticretico</span>
-                                                    <span className="block mt-1 text-gray-800 dark:hs-tab-active:text-gray-200 dark:text-gray-200">Ver una lista de los vigilantes.</span>
+                                                    <span className="block text-lg font-semibold hs-tab-active:text-blue-600 text-gray-800 dark:hs-tab-active:text-blue-500 dark:text-gray-200">Ver publicaciones</span>
+                                                    <span className="block mt-1 text-gray-800 dark:hs-tab-active:text-gray-200 dark:text-gray-200">Ver anuncios publicados de compra, venta o alquiler.</span>
                                                 </span>
                                             </span>
                                         </button>
@@ -82,7 +91,7 @@ const Anuncios = () => {
                                     {/* <!-- Tab Content --> */}
                                     <div>
                                         <div id="tabs-with-card-1" role="tabpanel" aria-labelledby="tabs-with-card-item-1">
-                                            <img className="shadow-xl shadow-gray-200 rounded-xl dark:shadow-gray-900/[.2]" src={condominioImagen} alt="Image Description" />
+                                            <img className="shadow-xl shadow-gray-200 rounded-xl dark:shadow-gray-900/[.2]" src={anuncioImagen} alt="Image Description" />
                                         </div>
 
                                         <div id="tabs-with-card-2" className="hidden" role="tabpanel" aria-labelledby="tabs-with-card-item-2">
@@ -98,9 +107,9 @@ const Anuncios = () => {
                                     {/* <!-- SVG Element --> */}
                                     <div className="hidden absolute top-0 right-0 translate-x-20 md:block lg:translate-x-20">
                                         <svg className="w-16 h-auto text-orange-500" width="121" height="135" viewBox="0 0 121 135" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M5 16.4754C11.7688 27.4499 21.2452 57.3224 5 89.0164" stroke="currentColor" stroke-width="10" stroke-linecap="round" />
-                                            <path d="M33.6761 112.104C44.6984 98.1239 74.2618 57.6776 83.4821 5" stroke="currentColor" stroke-width="10" stroke-linecap="round" />
-                                            <path d="M50.5525 130C68.2064 127.495 110.731 117.541 116 78.0874" stroke="currentColor" stroke-width="10" stroke-linecap="round" />
+                                            <path d="M5 16.4754C11.7688 27.4499 21.2452 57.3224 5 89.0164" stroke="currentColor" strokeWidth="10" strokeLinecap="round" />
+                                            <path d="M33.6761 112.104C44.6984 98.1239 74.2618 57.6776 83.4821 5" stroke="currentColor" strokeWidth="10" strokeLinecap="round" />
+                                            <path d="M50.5525 130C68.2064 127.495 110.731 117.541 116 78.0874" stroke="currentColor" strokeWidth="10" strokeLinecap="round" />
                                         </svg>
                                     </div>
                                     {/* <!-- End SVG Element --> */}

@@ -97,17 +97,26 @@ const NuevoPersonal = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-6">
                   <div>
                     <label htmlFor="nombre" className="block text-sm text-gray-700 font-medium dark:text-white">{'Nombre(s)'}</label>
-                    <input type="text" name="nombre" id="nombre" value={form.nombre} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
+                    <input type="text" 
+                    required
+                    aria-describedby="Complete el campo"
+                    name="nombre" id="nombre" value={form.nombre} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
                   </div>
 
                   <div>
                     <label htmlFor="apellidoPaterno" className="block text-sm text-gray-700 font-medium dark:text-white">Apellido Paterno</label>
-                    <input type="text" name="apellidoPaterno" id="apellidoPaterno" value={form.apellidoPaterno} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
+                    <input type="text" 
+                    required
+                    aria-describedby="Complete el campo"
+                    name="apellidoPaterno" id="apellidoPaterno" value={form.apellidoPaterno} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
                   </div>
 
                   <div>
                     <label htmlFor="apellidoMaterno" className="block text-sm text-gray-700 font-medium dark:text-white">Apellido Materno</label>
-                    <input type="text" name="apellidoMaterno" id="apellidoMaterno" value={form.apellidoMaterno} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
+                    <input type="text" 
+                    required
+                    aria-describedby="Complete el campo"
+                    name="apellidoMaterno" id="apellidoMaterno" value={form.apellidoMaterno} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
                   </div>
 
                 </div>
@@ -128,12 +137,18 @@ const NuevoPersonal = () => {
 
                   <div>
                     <label htmlFor="ci" className="block text-sm text-gray-700 font-medium dark:text-white">CI</label>
-                    <input type="text" name="ci" id="ci" value={form.ci} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
+                    <input type="text" 
+                    required
+                    aria-describedby="Complete el campo"
+                    name="ci" id="ci" value={form.ci} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
                   </div>
 
                   <div>
                     <label htmlFor="fechaNacimiento" className="block text-sm text-gray-700 font-medium dark:text-white">Fecha de Nacimiento</label>
-                    <input type="date" name="fechaNacimiento" id="fechaNacimiento" value={form.fechaNacimiento} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
+                    <input type="date" 
+                    required
+                    aria-describedby="Complete el campo"
+                    name="fechaNacimiento" id="fechaNacimiento" value={form.fechaNacimiento} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
                   </div>
 
                 </div>
@@ -141,7 +156,10 @@ const NuevoPersonal = () => {
 
                 <div>
                   <label htmlFor="direccion" className="block text-sm text-gray-700 font-medium dark:text-white">Direccion</label>
-                  <input type="text" name="direccion" id="direccion" value={form.direccion} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
+                  <input type="text" 
+                  required
+                  aria-describedby="Complete el campo"
+                  name="direccion" id="direccion" value={form.direccion} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
                 </div>
                 <div className="py-3 flex items-center text-xs text-gray-400 uppercase before:flex-[1_1_0%] before:border-t before:border-gray-200 before:mr-6 after:flex-[1_1_0%] after:border-t after:border-gray-200 after:ml-6 dark:text-gray-500 dark:before:border-gray-600 dark:after:border-gray-600">Informacion de contacto</div>
 
@@ -149,12 +167,18 @@ const NuevoPersonal = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-6">
                   <div className='col-span-2'>
                     <label htmlFor="correo" className="block text-sm text-gray-700 font-medium dark:text-white">Correo Electronico</label>
-                    <input type="email" name="correo" id="correo" value={form.correo} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
+                    <input type="email" name="correo" 
+                    required
+                    aria-describedby="Complete el campo"
+                    id="correo" value={form.correo} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
                   </div>
 
                   <div>
                     <label htmlFor="contacto" className="block text-sm text-gray-700 font-medium dark:text-white">Numero de contacto</label>
-                    <input type="number" name="contacto" id="contacto" value={form.contacto} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
+                    <input type="number" name="contacto" 
+                    required
+                    aria-describedby="Complete el campo"
+                    id="contacto" value={form.contacto} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
                   </div>
 
                 </div>
@@ -164,12 +188,18 @@ const NuevoPersonal = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-6">
                   <div className='col-span-2'>
                     <label htmlFor="nombreEmergencia" className="block text-sm text-gray-700 font-medium dark:text-white">Nombre contacto de Emergencia:</label>
-                    <input type="text" name="nombreEmergencia" id="nombreEmergencia" value={form.nombreEmergencia} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
+                    <input type="text" name="nombreEmergencia" 
+                    required
+                    aria-describedby="Complete el campo"
+                    id="nombreEmergencia" value={form.nombreEmergencia} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
                   </div>
 
                   <div>
                     <label htmlFor="contactoEmergencia" className="block text-sm text-gray-700 font-medium dark:text-white">Numero Emergencia:</label>
-                    <input type="number" name="contactoEmergencia" id="contactoEmergencia" value={form.contactoEmergencia} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
+                    <input type="number" name="contactoEmergencia"
+                    required
+                    aria-describedby="Complete el campo"
+                    id="contactoEmergencia" value={form.contactoEmergencia} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
                   </div>
 
                 </div>
@@ -197,12 +227,18 @@ const NuevoPersonal = () => {
 
                   <div>
                     <label htmlFor="fechaInicio" className="block text-sm text-gray-700 font-medium dark:text-white">Fecha Inicio</label>
-                    <input type="date" name="fechaInicio" id="fechaInicio" value={form.fechaInicio} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
+                    <input type="date" name="fechaInicio" 
+                    required
+                    aria-describedby="Complete el campo"
+                    id="fechaInicio" value={form.fechaInicio} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
                   </div>
 
                   <div>
                     <label htmlFor="salario" className="block text-sm text-gray-700 font-medium dark:text-white">{'Salario [Bs.]'}</label>
-                    <input type="number" name="salario" id="salario" value={form.salario} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
+                    <input type="number" name="salario" 
+                    required
+                    aria-describedby="Complete el campo"
+                    id="salario" value={form.salario} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
                   </div>
 
                 </div>
@@ -213,17 +249,26 @@ const NuevoPersonal = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-6">
                   <div>
                     <label htmlFor="horaIngreso" className="block text-sm text-gray-700 font-medium dark:text-white">Hora de Ingreso:</label>
-                    <input type="time" name="horaIngreso" id="horaIngreso" value={form.horaIngreso} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
+                    <input type="time" name="horaIngreso" 
+                    required
+                    aria-describedby="Complete el campo"
+                    id="horaIngreso" value={form.horaIngreso} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
                   </div>
 
                   <div>
                     <label htmlFor="horaSalida" className="block text-sm text-gray-700 font-medium dark:text-white">Hora de Salida:</label>
-                    <input type="time" name="horaSalida" id="horaSalida" value={form.horaSalida} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
+                    <input type="time" name="horaSalida" 
+                    required
+                    aria-describedby="Complete el campo"
+                    id="horaSalida" value={form.horaSalida} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
                   </div>
 
                   <div>
                     <label htmlFor="diasSemana" className="block text-sm text-gray-700 font-medium dark:text-white">Dias por semana</label>
-                    <input type="text" name="diasSemana" id="diasSemana" value={form.diasSemana} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
+                    <input type="text" name="diasSemana" 
+                    required
+                    aria-describedby="Complete el campo"
+                    id="diasSemana" value={form.diasSemana} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
                   </div>
                 </div>
                 {/* <!-- End Grid --> */}

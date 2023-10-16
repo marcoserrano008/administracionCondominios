@@ -7,13 +7,16 @@ import ingresoImagen from '../../assets/img/ingreso.png'
 import salidaImagen from '../../assets/img/salida.png'
 import guardiaImagen from '../../assets/img/guardia.png'
 import condominioImagen from '../../assets/img/condominio.jpg'
+import ingresosCondominio from '../../assets/img/ingresosCondominio.jpg'
+import historialVisitas from '../../assets/img/historialVisitas.svg'
+
 const Visitas = () => {
     return (
         <>
             <Header></Header>
             {/* <!-- Features --> */}
             <div className='flex justify-center items-center min-h-auto lg:mt-20' >
-            <div class="max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto bg-red-200">
+            <div class="max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
                 <div class="relative p-6 md:p-16">
                     {/* <!-- Grid --> */}
                     <div className="relative z-10 lg:grid lg:grid-cols-12 lg:gap-16 lg:items-center ">
@@ -25,7 +28,7 @@ const Visitas = () => {
                             {/* <!-- Tab Navs --> */}
                             <nav className="grid gap-4 mt-5 md:mt-10" aria-label="Tabs" role="tablist">
                                 <Link to={'/ingresos'}>
-                                <button type="button" className="hs-tab-active:bg-white hs-tab-active:shadow-md hs-tab-active:hover:border-transparent text-left hover:bg-gray-200 p-4 md:p-5 rounded-xl dark:hs-tab-active:bg-slate-900 dark:hover:bg-gray-700 active" id="tabs-with-card-item-1" data-hs-tab="#tabs-with-card-1" aria-controls="tabs-with-card-1" role="tab">
+                                <button type="button" className="hs-tab-active:bg-white w-full hs-tab-active:shadow-md hs-tab-active:hover:border-transparent text-left hover:bg-gray-200 p-4 md:p-5 rounded-xl dark:hs-tab-active:bg-slate-900 dark:hover:bg-gray-700 active" id="tabs-with-card-item-1" data-hs-tab="#tabs-with-card-1" aria-controls="tabs-with-card-1" role="tab">
                                     <span className="flex">
                                         <img
                                             className="flex-shrink-0 mt-2 h-6 w-6 md:w-7 md:h-7 hs-tab-active:text-blue-600 text-gray-800 dark:hs-tab-active:text-blue-500 dark:text-gray-200"
@@ -40,7 +43,7 @@ const Visitas = () => {
                                 </button>
                                 </Link>
                                 <Link to={'/salidas'}>
-                                <button type="button" className="hs-tab-active:bg-white hs-tab-active:shadow-md hs-tab-active:hover:border-transparent text-left hover:bg-gray-200 p-4 md:p-5 rounded-xl dark:hs-tab-active:bg-slate-900 dark:hover:bg-gray-700" id="tabs-with-card-item-2" data-hs-tab="#tabs-with-card-2" aria-controls="tabs-with-card-2" role="tab">
+                                <button type="button" className="hs-tab-active:bg-white  w-full hs-tab-active:shadow-md hs-tab-active:hover:border-transparent text-left hover:bg-gray-200 p-4 md:p-5 rounded-xl dark:hs-tab-active:bg-slate-900 dark:hover:bg-gray-700" id="tabs-with-card-item-2" data-hs-tab="#tabs-with-card-2" aria-controls="tabs-with-card-2" role="tab">
                                     <span className="flex">
                                         <img
                                             className="flex-shrink-0 mt-2 h-6 w-6 md:w-7 md:h-7 hs-tab-active:text-blue-600 text-gray-800 dark:hs-tab-active:text-blue-500 dark:text-gray-200"
@@ -56,16 +59,16 @@ const Visitas = () => {
                                 </Link>
 
                                 <Link to={'/vigilantes'}>
-                                <button type="button" className="hs-tab-active:bg-white hs-tab-active:shadow-md hs-tab-active:hover:border-transparent text-left hover:bg-gray-200 p-4 md:p-5 rounded-xl dark:hs-tab-active:bg-slate-900 dark:hover:bg-gray-700" id="tabs-with-card-item-3" data-hs-tab="#tabs-with-card-3" aria-controls="tabs-with-card-3" role="tab">
+                                <button type="button" className="hs-tab-active:bg-white  w-full hs-tab-active:shadow-md hs-tab-active:hover:border-transparent text-left hover:bg-gray-200 p-4 md:p-5 rounded-xl dark:hs-tab-active:bg-slate-900 dark:hover:bg-gray-700" id="tabs-with-card-item-3" data-hs-tab="#tabs-with-card-3" aria-controls="tabs-with-card-3" role="tab">
                                     <span className="flex">
                                         <img
                                             className="flex-shrink-0 mt-2 h-6 w-6 md:w-7 md:h-7 hs-tab-active:text-blue-600 text-gray-800 dark:hs-tab-active:text-blue-500 dark:text-gray-200"
-                                            src={guardiaImagen}
+                                            src={historialVisitas}
                                             alt="Descripción de la imagen"
                                         />
                                         <span className="grow ml-6">
-                                            <span className="block text-lg font-semibold hs-tab-active:text-blue-600 text-gray-800 dark:hs-tab-active:text-blue-500 dark:text-gray-200">Vigilantes</span>
-                                            <span className="block mt-1 text-gray-800 dark:hs-tab-active:text-gray-200 dark:text-gray-200">Ver una lista de los vigilantes.</span>
+                                            <span className="block text-lg font-semibold hs-tab-active:text-blue-600 text-gray-800 dark:hs-tab-active:text-blue-500 dark:text-gray-200">Historial</span>
+                                            <span className="block mt-1 text-gray-800 dark:hs-tab-active:text-gray-200 dark:text-gray-200">Ver un historial de ingresos y salidas.</span>
                                         </span>
                                     </span>
                                 </button>
@@ -80,7 +83,7 @@ const Visitas = () => {
                                 {/* <!-- Tab Content --> */}
                                 <div>
                                     <div id="tabs-with-card-1" role="tabpanel" aria-labelledby="tabs-with-card-item-1">
-                                        <img className="shadow-xl shadow-gray-200 rounded-xl dark:shadow-gray-900/[.2]" src={condominioImagen} alt="Image Description" />
+                                        <img className="shadow-xl shadow-gray-200 rounded-xl dark:shadow-gray-900/[.2]" src={ingresosCondominio} alt="Image Description" />
                                     </div>
 
                                     <div id="tabs-with-card-2" className="hidden" role="tabpanel" aria-labelledby="tabs-with-card-item-2">

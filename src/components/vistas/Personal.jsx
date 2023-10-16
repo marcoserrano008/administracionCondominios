@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom'
 import { Button } from '../ui/button'
 import Header from '../reusables/Header'
 import Footer from '../reusables/Footer'
+import IngresoPersonal from '../../assets/img/ingresoSalida.jpg'
+import RegistrarPersonal from '../../assets/img/registrarPersonal.jpg'
 
 const Personal = () => {
     return (
@@ -25,7 +27,8 @@ const Personal = () => {
                     <div className="flex justify-center">
                         <div className="group flex flex-col h-full w-5/6  border border-gray-200 hover:border-gray-400 hover:shadow-lg transition-all duration-300 rounded-xl p-5 dark:border-gray-700 dark:hover:border-transparent dark:hover:shadow-black/[.4]">
                             <div className="aspect-w-14 aspect-h-110">
-                                <img className="w-full object-cover rounded-xl" src="https://images.unsplash.com/photo-1633114128174-2f8aa49759b0?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80" alt="Image Description" />
+                                <img className="w-full object-cover rounded-xl" 
+                                src={RegistrarPersonal} alt="Image Description" />
                             </div>
                             <div className="my-3">
                                 <h3 className="text-3xl text-center font-semibold text-gray-800 dark:text-gray-300 dark:group-hover:text-white">
@@ -42,9 +45,7 @@ const Personal = () => {
                                 <Button className='bg-slate-200 w-full h-12 text-lg mt-2 mb-1 hover:bg-slate-400 hover:shadow-lg transition-all duration-300'>Ver Lista</Button>
                                 </Link>
                                 
-                                <Link to={'/reportePersonal'}>
-                                <Button className='bg-slate-200 w-full h-12 text-lg mt-2 mb-1 hover:bg-slate-400 hover:shadow-lg transition-all duration-300'>Reporte</Button>
-                                </Link>
+
                             </div>
                         </div>
                     </div>
@@ -55,7 +56,8 @@ const Personal = () => {
                     <div className="flex justify-center">
                         <div className="group flex flex-col h-full w-5/6  border border-gray-200 hover:border-gray-400 hover:shadow-lg transition-all duration-300 rounded-xl p-5 dark:border-gray-700 dark:hover:border-transparent dark:hover:shadow-black/[.4]">
                             <div className="aspect-w-14 aspect-h-110">
-                                <img className="w-full object-cover rounded-xl" src="https://images.unsplash.com/photo-1633114128174-2f8aa49759b0?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80" alt="Image Description" />
+                                <img className="w-full object-cover rounded-xl" 
+                                src={IngresoPersonal} alt="Image Description" />
                             </div>
                             <div className="my-3">
                                 <h3 className="text-3xl text-center font-semibold text-gray-800 dark:text-gray-300 dark:group-hover:text-white">
@@ -70,7 +72,7 @@ const Personal = () => {
                                 </Link>
                                 
                                 <Link to={'/reportePersonal'}>
-                                <Button className='bg-slate-200 w-full h-12 text-lg mt-2 mb-1 hover:bg-slate-400 hover:shadow-lg transition-all duration-300'>Reporte</Button>
+                                <Button className='bg-slate-200 w-full h-12 text-lg mt-2 mb-1 hover:bg-slate-400 hover:shadow-lg transition-all duration-300'>Reporte Asistencia</Button>
                                 </Link>
                             </div>
                         </div>

@@ -36,7 +36,9 @@ const Anticretico = () => {
   return (
     <>
       <Header />
-      <div>Ver Anuncios</div>
+      <div className="max-w-2xl mx-auto text-center mb-4 lg:mb-8">
+                    <h2 className="text-2xl font-bold md:text-4xl mt-10 md:leading-tight dark:text-white">ANUNCIOS</h2>
+                </div>
       <div className="max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {anuncios.map((anuncio, index) => (

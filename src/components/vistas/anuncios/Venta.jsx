@@ -157,7 +157,10 @@ const Venta = () => {
 
                   <div>
                     <label htmlFor="precio" className="block text-sm text-gray-700 font-medium dark:text-white">{'Precio [$us]'}</label>
-                    <input type="number" name="precio" id="precio" value={form.cantidad_pisos} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
+                    <input type="number" 
+                    required
+                    aria-describedby="Complete el campo"
+                    name="precio" id="precio" value={form.cantidad_pisos} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
                   </div>
                 </div>
                 {/* <!-- End Grid --> */}
@@ -208,12 +211,18 @@ const Venta = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-6">
                   <div>
                     <label htmlFor="contacto1" className="block text-sm text-gray-700 font-medium dark:text-white">Numero de referencia 1</label>
-                    <input type="number" name="contacto1" id="contacto1" value={form.nombre_edificio} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
+                    <input type="number" name="contacto1" 
+                    required
+                    aria-describedby="Complete el campo"
+                    id="contacto1" value={form.nombre_edificio} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
                   </div>
 
                   <div>
                     <label htmlFor="contacto2" className="block text-sm text-gray-700 font-medium dark:text-white">Numero de referencia 2</label>
-                    <input type="number" name="contacto2" id="contacto2" value={form.cantidad_pisos} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
+                    <input type="number" name="contacto2" 
+                    required
+                    aria-describedby="Complete el campo"
+                    id="contacto2" value={form.cantidad_pisos} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
                   </div>
                 </div>
                 {/* <!-- End Grid --> */}
@@ -221,14 +230,20 @@ const Venta = () => {
 
                 <div>
                   <label htmlFor="descripcion" className="block text-sm text-gray-700 font-medium dark:text-white">Descripcion</label>
-                  <input type="text" name="descripcion" id="descripcion" value={form.direccion} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
+                  <input type="text" name="descripcion" 
+                  required
+                  aria-describedby="Complete el campo"
+                  id="descripcion" value={form.direccion} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
                 </div>
 
 
 
                   <div>
                     <label htmlFor="imagenReferencia" className="block text-sm text-gray-700 font-medium dark:text-white">Imagen de referencia</label>
-                    <input type="file" name="imagenReferencia" id="imagenReferencia" onChange={handleChangeImage}
+                    <input type="file" name="imagenReferencia" 
+                    required
+                    aria-describedby="Complete el campo"
+                    id="imagenReferencia" onChange={handleChangeImage}
                       className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
                   </div>
 
