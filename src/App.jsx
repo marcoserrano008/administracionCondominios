@@ -43,7 +43,7 @@ import Salidas from './components/vistas/visitas/Salidas'
 import Vigilantes from './components/vistas/visitas/Vigilantes'
 import OtorgarServicio from './components/vistas/servicios/OtorgarServicio';
 import RegistrarServicio from './components/vistas/servicios/RegistrarServicio';
-import RegistrarResidente from './components/vistas/condominio/registrarResidente';
+import RegistrarResidente from './components/vistas/condominio/RegistrarResidente';
 import GestorAnuncios from './components/vistas/anuncios/GestorAnuncios';
 
 import { AuthProvider } from './auth/AuthContext';
