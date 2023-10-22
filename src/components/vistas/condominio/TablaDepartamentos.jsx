@@ -105,7 +105,7 @@ const TablaDepartamentos = () => {
 
     const deleteBuilding = async (id) => {
         const db = getFirestore(app);
-        const departamentosDoc = doc(db, "edificios", id);
+        const departamentosDoc = doc(db, "departamentos", id);
         await deleteDoc(departamentosDoc);
     };
 
