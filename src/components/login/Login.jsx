@@ -17,7 +17,7 @@ function Login() {
     const authInstance = getAuth();
     try {
       await signInWithEmailAndPassword(authInstance, email, password);
-      navigate('/dashboard');
+      navigate('/');
     } catch (error) {
       console.error("Error al iniciar sesión:", error);
     }
@@ -42,7 +42,7 @@ function Login() {
     const authInstance = getAuth();
     try {
       await signInWithEmailAndPassword(authInstance, email, password);
-      navigate('/dashboard');
+      navigate('/');
     } catch (error) {
       console.error("Error al iniciar sesión:", error);
     }

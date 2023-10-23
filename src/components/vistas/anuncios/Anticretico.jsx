@@ -27,7 +27,7 @@ const Anticretico = () => {
   const [selectedAnuncio, setSelectedAnuncio] = useState(null);
 
 
-  
+
   function openModal(anuncio) {
     setSelectedAnuncio(anuncio);
     setIsOpen(true);
@@ -37,8 +37,8 @@ const Anticretico = () => {
     <>
       <Header />
       <div className="max-w-2xl mx-auto text-center mb-4 lg:mb-8">
-                    <h2 className="text-2xl font-bold md:text-4xl mt-10 md:leading-tight dark:text-white">ANUNCIOS</h2>
-                </div>
+        <h2 className="text-2xl font-bold md:text-4xl mt-10 md:leading-tight dark:text-white">ANUNCIOS</h2>
+      </div>
       <div className="max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {anuncios.map((anuncio, index) => (
@@ -74,21 +74,27 @@ const Anticretico = () => {
       </div>
 
       {isOpen && selectedAnuncio && (
-        <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div className="bg-white p-5 rounded-lg shadow-md max-w-xl w-full">
-            <button onClick={() => setIsOpen(false)}>X</button>
-            <img className="w-full h-52 object-cover" src={selectedAnuncio.imagenReferencia} alt="Imagen Referencia" />
-            <h3 className="text-2xl font-bold">$us {selectedAnuncio.precio}</h3>
-            <span className={`inline-flex items-center gap-1.5 py-1.5 px-8 rounded-full text-xl font-medium ${getBadgeColor(selectedAnuncio.tipo)} text-white`}>{selectedAnuncio.tipo}</span>
-            <p className="mt-3 text-xl text-gray-500">{selectedAnuncio.numeroDepartamento}</p>
-            <p className="mt-3 text-xl text-gray-500">{selectedAnuncio.edificio}</p>
-            <p className="mt-3">{selectedAnuncio.descripcion}</p>
-            <p>Contacto 1: {selectedAnuncio.contacto1}</p>
-            <p>Contacto 2: {selectedAnuncio.contacto2}</p>
+        <>
+          {/* Modal Background */}
+          <div className="fixed inset-0 bg-black opacity-50 z-40" onClick={() => setIsOpen(false)}></div>
+
+          {/* Modal Content */}
+          <div className="fixed inset-0 flex items-center justify-center z-50">
+            <div className="bg-white p-5 rounded-lg shadow-md max-w-xl w-full">
+              <button onClick={() => setIsOpen(false)}>X</button>
+              <img className="w-full h-52 object-cover" src={selectedAnuncio.imagenReferencia} alt="Imagen Referencia" />
+              <h3 className="text-2xl font-bold">$us {selectedAnuncio.precio}</h3>
+              <span className={`inline-flex items-center gap-1.5 py-1.5 px-8 rounded-full text-xl font-medium ${getBadgeColor(selectedAnuncio.tipo)} text-white`}>{selectedAnuncio.tipo}</span>
+              <p className="mt-3 text-xl text-gray-500">{selectedAnuncio.numeroDepartamento}</p>
+              <p className="mt-3 text-xl text-gray-500">{selectedAnuncio.edificio}</p>
+              <p className="mt-3">{selectedAnuncio.descripcion}</p>
+              <p>Contacto 1: {selectedAnuncio.contacto1}</p>
+              <p>Contacto 2: {selectedAnuncio.contacto2}</p>
+            </div>
           </div>
-          <div className="fixed inset-0 bg-black opacity-50" onClick={() => setIsOpen(false)}></div>
-        </div>
+        </>
       )}
+
 
 
       <Footer />
