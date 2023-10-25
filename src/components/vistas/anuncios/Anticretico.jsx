@@ -55,10 +55,10 @@ const Anticretico = () => {
 
                 </div>
                 <p className="mt-3 text-xl text-gray-500">
-                  {anuncio.numeroDepartamento}
+                Numero Departamento: {anuncio.numeroDepartamento}
                 </p>
                 <p className="mt-3 text-xl text-gray-500">
-                  {anuncio.edificio}
+                  Edificio: {anuncio.edificio}
                 </p>
               </div>
               <div className="mt-auto flex border-t border-gray-200 divide-x divide-gray-200 dark:border-gray-700 dark:divide-gray-700">
@@ -85,8 +85,8 @@ const Anticretico = () => {
               <img className="w-full h-52 object-cover" src={selectedAnuncio.imagenReferencia} alt="Imagen Referencia" />
               <h3 className="text-2xl font-bold">$us {selectedAnuncio.precio}</h3>
               <span className={`inline-flex items-center gap-1.5 py-1.5 px-8 rounded-full text-xl font-medium ${getBadgeColor(selectedAnuncio.tipo)} text-white`}>{selectedAnuncio.tipo}</span>
-              <p className="mt-3 text-xl text-gray-500">{selectedAnuncio.numeroDepartamento}</p>
-              <p className="mt-3 text-xl text-gray-500">{selectedAnuncio.edificio}</p>
+              <p className="mt-3 text-xl text-gray-500">Numero Departamento: {selectedAnuncio.numeroDepartamento}</p>
+              <p className="mt-3 text-xl text-gray-500">Edificio: {selectedAnuncio.edificio}</p>
               <p className="mt-3">{selectedAnuncio.descripcion}</p>
               <p>Contacto 1: {selectedAnuncio.contacto1}</p>
               <p>Contacto 2: {selectedAnuncio.contacto2}</p>

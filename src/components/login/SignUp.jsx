@@ -48,7 +48,16 @@ function SignUp() {
                 <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
 
                   <form onSubmit={handleSubmit}>
+
                     <div className="grid gap-y-4 mt-2">
+                      <div>
+                        <label htmlFor="nombre" className="block text-sm text-gray-700 font-medium dark:text-white">{'Nombre(s)'}</label>
+                        <input type="text"
+                          required
+                          aria-describedby="Complete el campo"
+                          name="nombre" id="nombre" value={''} onChange={''} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
+                      </div>
+
                       {/* Form Group: Email */}
                       <div>
                         <label htmlFor="email" className="block text-sm mb-2 dark:text-white text-left">Correo</label>
@@ -91,6 +100,7 @@ function SignUp() {
                       </div>
                       {/* ... código similar al anterior ... */}
 
+
                       <Button className='bg-slate-200 hover:bg-slate-300' type="submit" >
                         Registrarse
                       </Button>
@@ -111,7 +121,7 @@ function SignUp() {
         </div>
       </div>
 
-    <Footer></Footer>
+      <Footer></Footer>
 
 
     </>

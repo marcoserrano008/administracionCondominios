@@ -36,6 +36,10 @@ const fetchBuildings = async () => {
     const edificioSnapshot = await getDocs(edificiosCol);
     return edificioSnapshot.docs.map(doc => {
         const data = doc.data();
+
+        const date = data.fechaHoraIngreso.toDate();
+        const formattedDate = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+
         return {
             edificio: data.edificio,
             numeroDepartamento: data.numeroDepartamento,
@@ -43,7 +47,7 @@ const fetchBuildings = async () => {
             registroSalida: data.registroSalida,
             motivoVisita: data.motivoVisita,
             tipoVisitante: data.tipoVisitante,
-            
+            fechaHoraIngreso: formattedDate,
             // fechaHoraIngreso: data.fechaHoraIngreso,
 
             id: doc.id
@@ -200,7 +204,7 @@ const TablaIngresosSalidas = () => {
             {
                 accessorKey: 'edificio',
                 header: 'Edificio',
-                size: 140,
+                
                 muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
                     ...getCommonEditTextFieldProps(cell),
 
@@ -209,7 +213,7 @@ const TablaIngresosSalidas = () => {
             {
                 accessorKey: 'numeroDepartamento',
                 header: 'Numero de Departamento',
-                size: 140,
+                
                 muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
                     ...getCommonEditTextFieldProps(cell),
                 }),
@@ -217,25 +221,28 @@ const TablaIngresosSalidas = () => {
             {
                 accessorKey: 'nombreCompleto',
                 header: 'Nombre Completo del Vistante',
+               
                 muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
                     ...getCommonEditTextFieldProps(cell),
-                
+
                 }),
             },
             {
-                accessorKey: 'registroSalida',
-                header: 'Registró su salida',
+                accessorKey: 'fechaHoraIngreso',
+                header: 'Fecha y Hora de Ingreso',
+             
                 muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
                     ...getCommonEditTextFieldProps(cell),
-                 
+
                 }),
             },
+
             {
                 accessorKey: 'motivoVisita',
                 header: 'Motivo de la Visita',
                 muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
                     ...getCommonEditTextFieldProps(cell),
-               
+
                 }),
             },
             {
@@ -243,17 +250,19 @@ const TablaIngresosSalidas = () => {
                 header: 'Tipo de Visitante',
                 muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
                     ...getCommonEditTextFieldProps(cell),
-             
+
                 }),
             },
             {
-                accessorKey: 'fechaHoraIngreso',
-                header: 'Fecha y Hora de Ingreso',
+                accessorKey: 'registroSalida',
+                header: 'Registró su salida',
+
                 muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
                     ...getCommonEditTextFieldProps(cell),
-             
+
                 }),
             },
+
         ],
         [getCommonEditTextFieldProps],
     );
@@ -282,12 +291,7 @@ const TablaIngresosSalidas = () => {
                 onEditingRowSave={handleSaveRowEdits}
                 onEditingRowCancel={handleCancelRowEdits}
                 renderRowActions={({ row, table }) => (
-                    <Box sx={{ display: 'flex', gap: '1rem' }}>
-                        <Tooltip arrow placement="left" title="Edit">
-                            <IconButton onClick={() => table.setEditingRow(row)}>
-                                <Edit />
-                            </IconButton>
-                        </Tooltip>
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <Tooltip arrow placement="right" title="Delete">
                             <IconButton color="error" onClick={() => handleDeleteRow(row)}>
                                 <Delete />

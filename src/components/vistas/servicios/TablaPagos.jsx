@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { MaterialReactTable } from 'material-react-table';
 
-import { getFirestore, collection, getDocs } from "firebase/firestore";
+import { getFirestore, collection, getDocs, getDoc } from "firebase/firestore";
 import { app } from '../../../firebase';
 //Import Material React Table Translations
 import { MRT_Localization_ES } from 'material-react-table/locales/es';
@@ -15,7 +15,6 @@ import { doc, updateDoc, deleteDoc } from 'firebase/firestore';
 
 import {
     Box,
-    
     Dialog,
     DialogActions,
     DialogContent,
@@ -27,41 +26,65 @@ import {
     Tooltip,
 } from '@mui/material';
 import { Delete, Edit } from '@mui/icons-material';
-import { Link } from 'react-router-dom';
+import { Link, useNavigation } from 'react-router-dom';
+import { db } from "../../../firebase";
 
 const fetchBuildings = async () => {
     const db = getFirestore(app);
-    const edificiosCol = collection(db, "anuncios");
-    const edificioSnapshot = await getDocs(edificiosCol);
-    return edificioSnapshot.docs.map(doc => {
+    const cobroServicioCol = collection(db, "pagoServicios");
+    const cobroServicionapshot = await getDocs(cobroServicioCol);
+
+    const results = await Promise.all(cobroServicionapshot.docs.map(async doc => {
         const data = doc.data();
+        const serviceName = await getServiceName(data.servicio);
+
+        // Convertir Timestamp a Date y luego a una representación legible
+        const date = data.fechaHoraPago.toDate();
+        const formattedDate = date.toLocaleDateString() //+ ' ' + date.toLocaleTimeString();
+
         return {
+            serviceName: serviceName,
+            idServicio: data.servicio,
             edificio: data.edificio,
-            numeroDepartamento: data.numeroDepartamento,
-            tipo: data.tipo,
-            precio: data.precio,
-            contacto1: data.contacto1,
-            contacto2: data.contacto2,
-            descripcion: data.descripcion,
+            departamento: data.numeroDepartamento,
+            costo: data.costo,
+            cobro: data.cobro,
+            fechaHoraPago: formattedDate,
             id: doc.id
         };
-    });
+    }));
+
+    return results;
 };
 
-const TablaAnuncios = () => {
+
+const getServiceName = async (idServicio) => {
+    const db = getFirestore(app);
+    const serviceRef = doc(db, "servicios", idServicio);
+    const serviceSnap = await getDoc(serviceRef);
+    
+    if (serviceSnap.exists()) {
+        return serviceSnap.data().nombre;
+    } else {
+        return null; // o cualquier valor predeterminado que quieras retornar en caso de que el documento no exista
+    }
+};
+
+
+const TablaPagos = () => {
     const [createModalOpen, setCreateModalOpen] = useState(false);
     const [tableData, setTableData] = useState([]);
     const [validationErrors, setValidationErrors] = useState({});
     const [isLoading, setIsLoading] = useState(true);
 
-    
+
     useEffect(() => {
         const fetchData = async () => {
             setIsLoading(true);
-            const edificios = await fetchBuildings();
-            setTableData(edificios);
+            const cobroServicio = await fetchBuildings();
+            setTableData(cobroServicio);
             setIsLoading(false);
-    
+
         };
         fetchData();
     }, []);
@@ -73,17 +96,16 @@ const TablaAnuncios = () => {
 
     //Editar los datos
 
-    const updatePropietario = async (id, updatedBuilding) => {
+    const updateBuilding = async (id, updatedBuilding) => {
         const db = getFirestore(app);
-        const edificioDoc = doc(db, "anuncios", id);
-        await updateDoc(edificioDoc, updatedBuilding);
+        const cobroServicioDoc = doc(db, "pagoServicios", id);
+        await updateDoc(cobroServicioDoc, updatedBuilding);
     };
 
-    
 
     const handleSaveRowEdits = async ({ exitEditingMode, row, values }) => {
         if (!Object.keys(validationErrors).length) {
-            await updatePropietario(row.original.id, values);
+            await updateBuilding(row.original.id, values);
             tableData[row.index] = values;
             //send/receive api updates here, then refetch or update local table data for re-render
             setTableData([...tableData]);
@@ -98,30 +120,30 @@ const TablaAnuncios = () => {
 
     //Eliminar datos
 
-    const deletePropietario = async (id) => {
+    const deleteBuilding = async (id) => {
         const db = getFirestore(app);
-        const edificioDoc = doc(db, "anuncios", id);
-        await deleteDoc(edificioDoc);
+        const cobroServicioDoc = doc(db, "pagoServicios", id);
+        await deleteDoc(cobroServicioDoc);
     };
 
 
     const handleDeleteRow = useCallback(
         async (row) => {
-            if (!confirm(`Are you sure you want to delete ${row.getValue('edificio')}`)) {
+            if (!confirm(`Are you sure you want to delete ${row.getValue('nombre')}`)) {
                 return;
             }
-            await deletePropietario(row.original.id);
+            await deleteBuilding(row.original.id);
             tableData.splice(row.index, 1);
             setTableData([...tableData]);
         },
         [tableData],
     );
 
-    
+
     const createHeaders = (keys) => {
         const result = []
 
-        for (let key of keys){
+        for (let key of keys) {
             result.push({
                 id: key,
                 name: key,
@@ -133,34 +155,27 @@ const TablaAnuncios = () => {
 
 
     const handleExportData = async () => {
-       const  headers = createHeaders([
-        'edificio',
-        'numeroDepartamento',
-        'tipo',
-        'precio',
-        'contacto1',
-        'contacto2',
-        'descripcion',
+        const headers = createHeaders([
+            'nombre',
+            'costo',
+            'cobro',
+            'contacto',
+            'encargado',
+        ]);
+        const doc = new jsPDF({ orientation: 'landscape' });
+        const tData = tableData?.map((row) => ({
+            ...row,
+            nombre: String(row.nombre),
+            costo: String(row.costo),
+            cobro: String(row.cobro),
+            contacto: String(row.contacto),
+            encargado: String(row.encargado),
+        }))
 
-
-       ]);
-       const doc = new jsPDF({orientation: 'landscape'});
-       const tData = tableData?.map((row) => ({
-        ...row,
-
-        edificio: String(row.edificio),
-        numeroDepartamento: String(row.numeroDepartamento),
-        tipo: String(row.tipo),
-        precio: String(row.precio),
-        contacto1: String(row.contacto1),
-        contacto2: String(row.contacto2),
-        descripcion: String(row.descripcion),
-       }))
-
-       doc.table(1,1,tData,headers,{autoSize:true})
-       doc.save('data.pdf')
+        doc.table(1, 1, tData, headers, { autoSize: true })
+        doc.save('data.pdf')
         console.log('sss')
-      };
+    };
 
     const getCommonEditTextFieldProps = useCallback(
         (cell) => {
@@ -170,9 +185,6 @@ const TablaAnuncios = () => {
                 onBlur: (event) => {
                     let isValid = validateRequired(event.target.value);
 
-                    // if (cell.column.accessorKey === 'correo') {
-                    //     isValid = validateEmail(event.target.value);
-                    // } else 
                     if (cell.column.accessorKey === 'contacto') {
                         isValid = validatePhoneNumber(event.target.value); // Asumo que tienes una función de validación para teléfonos, si no la tienes, puedes usar validateRequired o crear una.
                     }
@@ -199,61 +211,49 @@ const TablaAnuncios = () => {
     const columns = useMemo(
         () => [
             {
+                accessorKey: 'serviceName',
+                header: 'Nombre del servicio',
+                size: 140,
+                muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
+                    ...getCommonEditTextFieldProps(cell),
+                }),
+            },
+            {
                 accessorKey: 'edificio',
-                header: 'Nombre del edificio',
+                header: 'Edificio',
                 size: 140,
                 muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
                     ...getCommonEditTextFieldProps(cell),
                 }),
             },
             {
-                accessorKey: 'numeroDepartamento',
+                accessorKey: 'departamento',
                 header: 'Numero de Departamento',
-                size: 140,
                 muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
                     ...getCommonEditTextFieldProps(cell),
                 }),
             },
             {
-                accessorKey: 'tipo',
-                header: 'Tipo Publicación',
+                accessorKey: 'costo',
+                header: 'Costo del servicio',
                 muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
                     ...getCommonEditTextFieldProps(cell),
                 }),
             },
             {
-                accessorKey: 'precio',
-                header: 'Precio [$us]',
+                accessorKey: 'cobro',
+                header: 'Monto pagado',
                 muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
                     ...getCommonEditTextFieldProps(cell),
                 }),
             },
             {
-                accessorKey: 'contacto1',
-                header: 'Contacto 1',
+                accessorKey: 'fechaHoraPago',
+                header: 'Fecha Pagada',
                 muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
                     ...getCommonEditTextFieldProps(cell),
                 }),
             },
-            {
-                accessorKey: 'contacto2',
-                header: 'Contacto 2',
-                size: 140,
-                muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-                    ...getCommonEditTextFieldProps(cell),
-
-                }),
-            },
-            {
-                accessorKey: 'descripcion',
-                header: 'Descripcion',
-                size: 140,
-                muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-                    ...getCommonEditTextFieldProps(cell),
-
-                }),
-            },
-
         ],
         [getCommonEditTextFieldProps],
     );
@@ -272,7 +272,7 @@ const TablaAnuncios = () => {
                 columns={columns}
                 data={tableData}
                 editingMode="modal" //default
-
+                initialState={{ columnVisibility: { baños: false, garaje: false } }}
                 localization={MRT_Localization_ES}
                 state={{ isLoading: isLoading }}
                 enableRowNumbers
@@ -293,19 +293,23 @@ const TablaAnuncios = () => {
                                 <Delete />
                             </IconButton>
                         </Tooltip>
-                        
+
                     </Box>
                 )}
                 renderTopToolbarCustomActions={() => (
                     <>
-                    <div>
-        
-                      <Button className='bg-slate-100 ml-5'
-                        //export all data that is currently in the table (ignore pagination, sorting, filtering, etc.)
-                        onClick={handleExportData}
-                      >Exportar a PDF</Button>
-                    </div>
-                  </>
+                        <div>
+
+                            <Button className='bg-slate-100 ml-5'
+                                //export all data that is currently in the table (ignore pagination, sorting, filtering, etc.)
+                                onClick={handleExportData}
+                            >Exportar a PDF</Button>
+
+
+                        </div>
+
+                    </>
+
                 )}
             />
             <CreateNewAccountModal
@@ -313,12 +317,12 @@ const TablaAnuncios = () => {
                 open={createModalOpen}
                 onClose={() => setCreateModalOpen(false)}
                 onSubmit={handleCreateNewRow}
-            /> 
+            />
         </>
     );
 };
 
-//TablaEdificios of creating a mui dialog modal for creating new rows
+//TablacobroServicio of creating a mui dialog modal for creating new rows
 export const CreateNewAccountModal = ({ open, columns, onClose, onSubmit }) => {
     const [values, setValues] = useState(() =>
         columns.reduce((acc, column) => {
@@ -382,7 +386,4 @@ const validatePhoneNumber = (phoneNumber) =>
     !!phoneNumber.length &&
     !!phoneNumber.match(/^\d{1,15}$/);
 
-
-
-
-export default TablaAnuncios
+export default TablaPagos

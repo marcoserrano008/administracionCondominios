@@ -47,6 +47,7 @@ import RegistrarResidente from './components/vistas/condominio/RegistrarResident
 import GestorAnuncios from './components/vistas/anuncios/GestorAnuncios';
 
 import { AuthProvider } from './auth/AuthContext';
+import VerPagos from './components/vistas/servicios/VerPagos';
 function App() {
   return (
 
@@ -88,6 +89,8 @@ function App() {
             <Route path='/registrarServicio' element={<RegistrarServicio />} />
             <Route path='/registrarPropietario' element={<RegistrarResidente />} />
             <Route path='/gestorAnuncios' element={<GestorAnuncios />} />
+            <Route path='/verPagos' element={<VerPagos/>} />
+            
           </Routes>
         </AuthProvider>
       </BrowserRouter>
