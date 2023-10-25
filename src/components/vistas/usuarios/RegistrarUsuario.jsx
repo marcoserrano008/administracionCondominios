@@ -3,11 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import { getFirestore, doc, setDoc } from 'firebase/firestore';
 import { Link } from 'react-router-dom';
-import { Button } from '../ui/button';
-import Header from '../reusables/Header';
-import Footer from '../reusables/Footer';
+import { Button } from '../../ui/button';
 
-function SignUp() {
+import Footer from '../../reusables/Footer';
+import Header from '../../reusables/Header';
+
+
+const RegistrarUsuario = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
@@ -58,7 +60,7 @@ function SignUp() {
 
       await setDoc(doc(db, 'users', user.uid), {
         uid: user.uid,
-        role: 'usuario',  // Puedes ajustar esto según tus necesidades
+        role: role,
         nombre: nombre,
         apellidoPaterno: apellidoPaterno,
         apellidoMaterno: apellidoMaterno,
@@ -73,16 +75,17 @@ function SignUp() {
 
   const [errorMessage, setErrorMessage] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [role, setRole] = useState('usuario');  // Por defecto será 'usuario'
 
   return (
     <>
-      <Header></Header>
+      <Header />
       <div className="dark:bg-slate-900  flex h-full items-center py-16">
         <div className="w-full max-w-md mx-auto p-6">
           <div className="mt-7 bg-white border border-gray-200 rounded-xl shadow-sm dark:bg-gray-800 dark:border-gray-700">
             <div className="p-4 sm:p-7">
               <div className="text-center">
-                <h1 className="block text-2xl font-bold text-gray-800 dark:text-white">Registrarse</h1>
+                <h1 className="block text-2xl font-bold text-gray-800 dark:text-white">Registrar Usuario</h1>
                 <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
 
                   <form onSubmit={handleSubmit}>
@@ -112,6 +115,20 @@ function SignUp() {
                           name="apellidoMaterno" id="apellidoMaterno" value={apellidoMaterno} onChange={(e) => setApellidoMaterno(e.target.value)} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
                       </div>
 
+                      <div>
+                        <label htmlFor="role" className="block text-sm mb-2 dark:text-white text-left">Rol del Usuario</label>
+                        <select
+                          name="role"
+                          id="role"
+                          value={role}
+                          onChange={(e) => setRole(e.target.value)}
+                          className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400"
+                        >
+                          <option value="usuario">Usuario</option>
+                          <option value="guardia">Guardia</option>
+                          <option value="administrador">Administrador</option>
+                        </select>
+                      </div>
                       {/* Form Group: Email */}
                       <div>
                         <label htmlFor="email" className="block text-sm mb-2 dark:text-white text-left">Correo</label>
@@ -173,7 +190,7 @@ function SignUp() {
 
                       {errorMessage && <p className="text-xs text-red-600 mt-2">{errorMessage}</p>}
                       <Button className='bg-slate-200 hover:bg-slate-300' type="submit" >
-                        Registrarse
+                        Registrar
                       </Button>
 
                       <Link to='/' className="block w-full">
@@ -200,4 +217,5 @@ function SignUp() {
   );
 }
 
-export default SignUp;
+
+export default RegistrarUsuario

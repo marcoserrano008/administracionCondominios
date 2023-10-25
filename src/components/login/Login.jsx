@@ -110,6 +110,8 @@ function Login() {
                         </div>
                         <p className="hidden text-xs text-red-600 mt-2" id="email-error">Porfavor ingrese su contraseña</p>
                       </div>
+
+                      
                       {/* ... código similar al anterior ... */}
 
                       <Button className='bg-slate-200 hover:bg-slate-300' type="submit" >

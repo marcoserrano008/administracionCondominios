@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import edificioIcono from '../../assets/img/edificioIcono.svg'
@@ -6,11 +6,38 @@ import { useAuth } from '../../auth/AuthContext';
 import { getAuth } from 'firebase/auth';
 import { signOut } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
+import { doc, getDoc } from "firebase/firestore";
+import { db, app } from '../../firebase';
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
   const { user } = useAuth(); // Usa el hook useAuth para obtener el usuario
+  const [userRole, setUserRole] = useState(null);
+  useEffect(() => {
+    if (user) {
+        fetchUserRole(user.uid).then((role) => {
+            setUserRole(role);
+        });
+    }
+}, [user]);
+
+const fetchUserRole = async (uid) => {
+  try {
+      const userRef = doc(db, "users", uid); // Asumiendo que tu colección se llama "users"
+      const userSnapshot = await getDoc(userRef);
+
+      if (userSnapshot.exists()) {
+          return userSnapshot.data().role; // Retorna el rol del usuario
+      } else {
+          console.error("No se encontró el documento del usuario");
+          return null;
+      }
+  } catch (error) {
+      console.error("Error al obtener el rol:", error);
+      return null;
+  }
+}
 
   const handleLogout = async () => {
     try {
@@ -67,7 +94,7 @@ const Header = () => {
             <div className={`${menuOpen ? '' : 'hidden'} justify-between items-center w-full lg:flex lg:w-auto lg:order-1`} id="mobile-menu-2">
 
               <ul className="flex flex-col mt-4 font-medium lg:flex-row lg:space-x-8 lg:mt-0">
-                {user && (
+                {user && userRole === 'administrador' && (
                   <>
 
                     <li>
@@ -93,6 +120,46 @@ const Header = () => {
                         Visitas
                       </Link>
                     </li>
+                    <li>
+                      <Link to='/anuncios' className="block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700">
+                        Anuncios
+                      </Link>
+                    </li>
+
+                    <li>
+                      <Link to='/usuarios' className="block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700">
+                        Usuarios
+                      </Link>
+                    </li>
+
+                  </>
+
+                )}
+
+{user && userRole === 'guardia' && (
+                  <>
+
+                    <li>
+                      <Link to="/servicios" className="block py-2 pr-4 pl-3 text-white rounded bg-primary-700 lg:bg-transparent lg:text-primary-700 lg:p-0 dark:text-white">
+                        Servicios
+                      </Link>
+                    </li>
+                   <li>
+                      <Link to='/visitas' className="block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700">
+                        Visitas
+                      </Link>
+                    </li>
+                    <li>
+                      <Link to='/anuncios' className="block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700">
+                        Anuncios
+                      </Link>
+                    </li>
+                  </>
+
+                )}
+
+{user && userRole === 'usuario' && (
+                  <>
                     <li>
                       <Link to='/anuncios' className="block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700">
                         Anuncios

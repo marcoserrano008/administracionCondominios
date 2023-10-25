@@ -293,19 +293,18 @@ const TablaAnuncios = () => {
                                 <Delete />
                             </IconButton>
                         </Tooltip>
-                        
+                            
                     </Box>
                 )}
                 renderTopToolbarCustomActions={() => (
                     <>
                     <div>
-        
                       <Button className='bg-slate-100 ml-5'
                         //export all data that is currently in the table (ignore pagination, sorting, filtering, etc.)
                         onClick={handleExportData}
                       >Exportar a PDF</Button>
                     </div>
-                  </>
+                  </>   
                 )}
             />
             <CreateNewAccountModal

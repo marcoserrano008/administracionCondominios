@@ -14,44 +14,42 @@ import "jspdf-autotable";
 import { doc, updateDoc, deleteDoc } from 'firebase/firestore';
 
 import {
-    Box, 
-    
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    IconButton,
-    MenuItem,
-    Stack,
-    TextField,
-    Tooltip,
+  Box, 
+  
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  MenuItem,
+  Stack,
+  TextField,
+  Tooltip,
 } from '@mui/material';
 import { Delete, Edit } from '@mui/icons-material';
-import { data, states } from './makeData';
 import { Link } from 'react-router-dom';
 
-const fetchBuildings = async () => {
-    const db = getFirestore(app);
-    const edificiosCol = collection(db, "propietarios");
-    const edificioSnapshot = await getDocs(edificiosCol);
-    return edificioSnapshot.docs.map(doc => {
-        const data = doc.data();
-        return {
-            edificio: data.edificio,
-            numeroDepartamento: data.numeroDepartamento,
-            nombre: data.nombre,
-            apellidoPaterno: data.apellidoPaterno,
-            apellidoMaterno: data.apellidoMaterno,
-            contacto: data.contacto,
-            ci: data.ci,
-            id: doc.id
-        };
-    });
+const fetchUsers = async () => {
+  const db = getFirestore(app);
+  const edificiosCol = collection(db, "users");
+  const edificioSnapshot = await getDocs(edificiosCol);
+  return edificioSnapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+          nombre: data.nombre,
+          apellidoPaterno: data.apellidoPaterno,
+          apellidoMaterno: data.apellidoMaterno,
+          email: data.email,
+          role: data.role,
+          id: doc.id,
+      };
+  });
 };
 
 
-const TablaPropietarios = () => {
-    const [createModalOpen, setCreateModalOpen] = useState(false);
+
+const TablaUsuarios = () => {
+  const [createModalOpen, setCreateModalOpen] = useState(false);
     const [tableData, setTableData] = useState([]);
     const [validationErrors, setValidationErrors] = useState({});
     const [isLoading, setIsLoading] = useState(true);
@@ -60,7 +58,7 @@ const TablaPropietarios = () => {
     useEffect(() => {
         const fetchData = async () => {
             setIsLoading(true);
-            const edificios = await fetchBuildings();
+            const edificios = await fetchUsers();
             setTableData(edificios);
             setIsLoading(false);
     
@@ -77,7 +75,7 @@ const TablaPropietarios = () => {
 
     const updatePropietario = async (id, updatedBuilding) => {
         const db = getFirestore(app);
-        const edificioDoc = doc(db, "propietarios", id);
+        const edificioDoc = doc(db, "users", id);
         await updateDoc(edificioDoc, updatedBuilding);
     };
 
@@ -102,7 +100,7 @@ const TablaPropietarios = () => {
 
     const deletePropietario = async (id) => {
         const db = getFirestore(app);
-        const edificioDoc = doc(db, "propietarios", id);
+        const edificioDoc = doc(db, "users", id);
         await deleteDoc(edificioDoc);
     };
 
@@ -136,27 +134,22 @@ const TablaPropietarios = () => {
 
     const handleExportData = async () => {
        const  headers = createHeaders([
-        'edificio',
-        'numeroDepartamento',
         'nombre',
         'apellidoPaterno',
         'apellidoMaterno',
-        'contacto',
-        'ci',
-
+        'email',
+        'role',
 
        ]);
        const doc = new jsPDF({orientation: 'landscape'});
        const tData = tableData?.map((row) => ({
         ...row,
 
-        edificio: String(row.edificio),
-        numeroDepartamento: String(row.numeroDepartamento),
         nombre: String(row.nombre),
         apellidoPaterno: String(row.apellidoPaterno),
         apellidoMaterno: String(row.apellidoMaterno),
-        contacto: String(row.contacto),
-        ci: String(row.ci),
+        email: String(row.email),
+        role: String(row.role),
        }))
 
        doc.table(1,1,tData,headers,{autoSize:true})
@@ -201,24 +194,9 @@ const TablaPropietarios = () => {
     const columns = useMemo(
         () => [
             {
-                accessorKey: 'edificio',
-                header: 'Nombre del edificio',
-                size: 140,
-                muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-                    ...getCommonEditTextFieldProps(cell),
-                }),
-            },
-            {
-                accessorKey: 'numeroDepartamento',
-                header: 'Numero de Departamento',
-                size: 140,
-                muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-                    ...getCommonEditTextFieldProps(cell),
-                }),
-            },
-            {
                 accessorKey: 'nombre',
                 header: 'Nombre',
+                size: 140,
                 muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
                     ...getCommonEditTextFieldProps(cell),
                 }),
@@ -238,14 +216,23 @@ const TablaPropietarios = () => {
                 }),
             },
             {
-                accessorKey: 'contacto',
-                header: 'Numero de Contacto',
+                accessorKey: 'email',
+                header: 'Correo Electronico',
                 size: 140,
                 muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
                     ...getCommonEditTextFieldProps(cell),
                     type: 'number',
                 }),
             },
+            {
+              accessorKey: 'role',
+              header: 'Rol',
+              size: 140,
+              muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
+                  ...getCommonEditTextFieldProps(cell),
+                  type: 'number',
+              }),
+          },
 
         ],
         [getCommonEditTextFieldProps],
@@ -292,11 +279,11 @@ const TablaPropietarios = () => {
                 renderTopToolbarCustomActions={() => (
                     <>
                     <div>
-                      <Link to={'/registrarPropietario'}>
+                      <Link to={'/registrarUsuario'}>
                         <Button className='bg-slate-100 '
                           //export all data that is currently in the table (ignore pagination, sorting, filtering, etc.)
         
-                        >Registrar Propietario</Button>
+                        >Registrar Usuario</Button>
                       </Link>
         
                       <Button className='bg-slate-100 ml-5'
@@ -382,4 +369,4 @@ const validatePhoneNumber = (phoneNumber) =>
     !!phoneNumber.match(/^\d{1,15}$/);
 
 
-export default TablaPropietarios
+export default TablaUsuarios

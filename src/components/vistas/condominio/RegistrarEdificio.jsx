@@ -10,7 +10,7 @@ import { Link, useNavigate } from 'react-router-dom';
 const RegistrarEdificio = () => {
 
   const navigate = useNavigate();
-  const handleOnSubmit = async (event) => {
+  const handleOnSubmit = async (event) => { 
     event.preventDefault();
     setIsSubmitting(true);
     const formData = new FormData(event.target);
