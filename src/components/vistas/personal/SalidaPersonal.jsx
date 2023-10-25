@@ -16,6 +16,10 @@ const SalidaPersonal = () => {
   const navigate = useNavigate();
   const handleOnSubmit = async (event) => {
     event.preventDefault();
+    if (!form.cargo || !form.nombre) {
+      setErrorMessage("Por favor, seleccione tanto el Cargo como el Nombre antes de registrar.");
+      return;
+    }
     const formData = new FormData(event.target);
 
     try {
@@ -44,6 +48,8 @@ const SalidaPersonal = () => {
       alert("Error: no esta conectado!");
     }
   };
+
+  const [errorMessage, setErrorMessage] = useState('');
 
   const [form, setForm] = useState({
     cargo: '',
@@ -118,7 +124,7 @@ const SalidaPersonal = () => {
     const selectedEmpleado = nombres.find(emp => emp.nombreCompleto === e.target.value);
     if (selectedEmpleado) {
       const formattedDate = firestoreDateToFormattedDate(selectedEmpleado.fechaHoraIngreso);
-      
+
       setForm(prev => ({
         ...prev,
         fechaHoraIngreso: formattedDate,
@@ -126,7 +132,7 @@ const SalidaPersonal = () => {
     } else {
       console.error("No se encontró al empleado seleccionado."); // Esta línea podría ser la que lanza el error.
     }
-};
+  };
 
   //mostrar un modal para el ingreso e imprimir ticket
 
@@ -246,6 +252,7 @@ const SalidaPersonal = () => {
 
 
 
+              {errorMessage && <p className="text-xs text-red-600 mt-2">{errorMessage}</p>}
 
               <div className="mt-6 grid">
                 <button type="submit" className="inline-flex justify-center items-center gap-x-3 text-center bg-blue-600 hover:bg-blue-700 border border-transparent text-sm lg:text-base text-white font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 focus:ring-offset-white transition py-3 px-4 dark:focus:ring-offset-gray-800">Registrar Salida</button>

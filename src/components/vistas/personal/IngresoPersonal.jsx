@@ -14,6 +14,11 @@ const IngresoPersonal = () => {
   const navigate = useNavigate();
   const handleOnSubmit = async (event) => {
     event.preventDefault();
+
+    if (!form.cargo || !form.nombre) {
+      setErrorMessage("Por favor, seleccione tanto el Cargo como el Nombre antes de registrar.");
+      return;
+    }
     const formData = new FormData(event.target);
 
     try {
@@ -110,6 +115,8 @@ const IngresoPersonal = () => {
   }
 
 
+  const [errorMessage, setErrorMessage] = useState('');
+
   return (
     <>
       <Header />
@@ -130,10 +137,7 @@ const IngresoPersonal = () => {
             {/* <!-- Form --> */}
             <form onSubmit={handleOnSubmit}>
               <div className="grid gap-4 lg:gap-6">
-                {/* <div>
-                  <label htmlFor="edificio" className="block text-sm text-gray-700 font-medium dark:text-white">Edificio</label>
-                  <input type="text" name="edificio" id="edificio" value={form.edificio} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
-                </div> */}
+
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-6">
                   <div>
@@ -205,7 +209,7 @@ const IngresoPersonal = () => {
 
 
 
-
+{errorMessage && <p className="text-xs text-red-600 mt-2">{errorMessage}</p>}
               <div className="mt-6 grid">
                 <button type="submit" className="inline-flex justify-center items-center gap-x-3 text-center bg-blue-600 hover:bg-blue-700 border border-transparent text-sm lg:text-base text-white font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 focus:ring-offset-white transition py-3 px-4 dark:focus:ring-offset-gray-800">Registrar Ingreso</button>
               </div>

@@ -36,11 +36,18 @@ const fetchBuildings = async () => {
     const edificioSnapshot = await getDocs(edificiosCol);
     return edificioSnapshot.docs.map(doc => {
         const data = doc.data();
+
+        const dateIngreso = data.fechaHoraIngreso && data.fechaHoraIngreso.toDate ? data.fechaHoraIngreso.toDate() : null;
+        const formattedDateIngreso = dateIngreso ? dateIngreso.toLocaleDateString() + ' ' + dateIngreso.toLocaleTimeString() : 'No registrado';
+
+        const dateSalida = data.fechaHoraSalida && data.fechaHoraSalida.toDate ? data.fechaHoraSalida.toDate() : null;
+        const formattedDateSalida = dateSalida ? dateSalida.toLocaleDateString() + ' ' + dateSalida.toLocaleTimeString() : 'No registrado';
+
         return {
             nombre: data.nombre,
             cargo: data.cargo,
-            // fechaHoraIngreso: data.fechaHoraIngreso,
-            // fechaHoraSalida: data.fechaHoraSalida,
+            fechaHoraIngreso: formattedDateIngreso,
+            fechaHoraSalida: formattedDateSalida,
             id: doc.id
         };
     });
