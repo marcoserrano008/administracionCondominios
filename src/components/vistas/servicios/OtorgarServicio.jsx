@@ -5,7 +5,7 @@ import Footer from '../../reusables/Footer'
 const OtorgarServicio = () => {
   return (
     <>
-    <Header/>
+
     <div>OtorgarServicio</div>
     <Footer/>
     </>

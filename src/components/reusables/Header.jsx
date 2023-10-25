@@ -22,6 +22,12 @@ const Header = () => {
     }
   }, [user]);
 
+  const [activeLink, setActiveLink] = useState("");
+  const handleSetActiveLink = (linkName) => {
+    setActiveLink(linkName);
+  }
+
+
   const fetchUserRole = async (uid) => {
     try {
       const userRef = doc(db, "users", uid); // Asumiendo que tu colección se llama "users"
@@ -110,12 +116,18 @@ const Header = () => {
                   <>
 
                     <li>
-                      <Link to="/servicios" className="block py-2 pr-4 pl-3 text-white rounded bg-primary-700 lg:bg-transparent lg:text-primary-700 lg:p-0 dark:text-white">
+                      <Link to="/servicios"
+                        className={`block py-2 pr-4 pl-3 ${activeLink === 'servicios' ? 'text-primary-700' : 'text-gray-700 border-b border-gray-100 hover:bg-gray-50'} text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700"`}
+                        onClick={() => handleSetActiveLink('servicios')}
+                      >
                         Servicios
                       </Link>
                     </li>
                     <li>
-                      <Link to='/condominio' className="block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700">
+                      <Link to="/condominio"
+                        className={`block py-2 pr-4 pl-3 ${activeLink === 'condominio' ? 'text-primary-700' : 'text-gray-700 border-b border-gray-100 hover:bg-gray-50'} text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700"`}
+                        onClick={() => handleSetActiveLink('condominio')}
+                      >
                         Condominio
                       </Link>
 
@@ -123,23 +135,35 @@ const Header = () => {
 
 
                     <li>
-                      <Link to='/personal' className="block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700">
+                      <Link to='/personal'
+                        className={`block py-2 pr-4 pl-3 ${activeLink === 'personal' ? 'text-primary-700' : 'text-gray-700 border-b border-gray-100 hover:bg-gray-50'} text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700"`}
+                        onClick={() => handleSetActiveLink('personal')}
+                      >
                         Personal
                       </Link>
                     </li>
                     <li>
-                      <Link to='/visitas' className="block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700">
+                      <Link to='/visitas' 
+                        className={`block py-2 pr-4 pl-3 ${activeLink === 'visitas' ? 'text-primary-700' : 'text-gray-700 border-b border-gray-100 hover:bg-gray-50'} text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700"`}
+                        onClick={() => handleSetActiveLink('visitas')}
+                      >
                         Visitas
                       </Link>
                     </li>
                     <li>
-                      <Link to='/anuncios' className="block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700">
+                      <Link to='/anuncios' 
+                        className={`block py-2 pr-4 pl-3 ${activeLink === 'anuncios' ? 'text-primary-700' : 'text-gray-700 border-b border-gray-100 hover:bg-gray-50'} text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700"`}
+                        onClick={() => handleSetActiveLink('anuncios')}
+                      >
                         Anuncios
                       </Link>
                     </li>
 
                     <li>
-                      <Link to='/usuarios' className="block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700">
+                      <Link to='/usuarios'
+                        className={`block py-2 pr-4 pl-3 ${activeLink === 'usuarios' ? 'text-primary-700' : 'text-gray-700 border-b border-gray-100 hover:bg-gray-50'} text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700"`}
+                        onClick={() => handleSetActiveLink('usuarios')}
+                      >
                         Usuarios
                       </Link>
                     </li>
@@ -151,18 +175,28 @@ const Header = () => {
                 {user && userRole === 'guardia' && (
                   <>
 
-                    <li>
-                      <Link to="/servicios" className="block py-2 pr-4 pl-3 text-white rounded bg-primary-700 lg:bg-transparent lg:text-primary-700 lg:p-0 dark:text-white">
+<li>
+                      <Link to="/servicios"
+                        className={`block py-2 pr-4 pl-3 ${activeLink === 'servicios' ? 'text-primary-700' : 'text-gray-700 border-b border-gray-100 hover:bg-gray-50'} text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700"`}
+                        onClick={() => handleSetActiveLink('servicios')}
+                      >
                         Servicios
                       </Link>
                     </li>
-                    <li>
-                      <Link to='/visitas' className="block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700">
+
+                   <li>
+                      <Link to='/visitas' 
+                        className={`block py-2 pr-4 pl-3 ${activeLink === 'visitas' ? 'text-primary-700' : 'text-gray-700 border-b border-gray-100 hover:bg-gray-50'} text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700"`}
+                        onClick={() => handleSetActiveLink('visitas')}
+                      >
                         Visitas
                       </Link>
                     </li>
                     <li>
-                      <Link to='/anuncios' className="block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700">
+                      <Link to='/anuncios' 
+                        className={`block py-2 pr-4 pl-3 ${activeLink === 'anuncios' ? 'text-primary-700' : 'text-gray-700 border-b border-gray-100 hover:bg-gray-50'} text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700"`}
+                        onClick={() => handleSetActiveLink('anuncios')}
+                      >
                         Anuncios
                       </Link>
                     </li>
@@ -173,7 +207,10 @@ const Header = () => {
                 {user && userRole === 'usuario' && (
                   <>
                     <li>
-                      <Link to='/anuncios' className="block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700">
+                      <Link to='/anuncios' 
+                        className={`block py-2 pr-4 pl-3 ${activeLink === 'anuncios' ? 'text-primary-700' : 'text-gray-700 border-b border-gray-100 hover:bg-gray-50'} text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700"`}
+                        onClick={() => handleSetActiveLink('anuncios')}
+                      >
                         Anuncios
                       </Link>
                     </li>

@@ -7,7 +7,7 @@ import edificiosHorizontales from '../../assets/img/edificiosHorizontales.jpg'
 const Landing = () => {
   return (
     <>
-      <Header></Header>
+
       <>
         {/* <!-- Hero --> */}
         <div className="max-w-[85rem] mx-auto px-4 sm:px-6 lg:px-8 mt-20">

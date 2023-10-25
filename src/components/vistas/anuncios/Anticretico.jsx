@@ -35,7 +35,7 @@ const Anticretico = () => {
 
   return (
     <>
-      <Header />
+  
       <div className="max-w-2xl mx-auto text-center mb-4 lg:mb-8">
         <h2 className="text-2xl font-bold md:text-4xl mt-10 md:leading-tight dark:text-white">ANUNCIOS</h2>
       </div>

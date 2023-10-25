@@ -139,7 +139,6 @@ const Venta = () => {
 
   return (
     <>
-      <Header />
 
       {/* <!-- Hire Us --> */}
       <div className="max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
@@ -271,7 +270,7 @@ const Venta = () => {
                   type="submit"
                   disabled={isSubmitting}
                   className="inline-flex justify-center items-center gap-x-3 text-center ${isSubmitting ? 'opacity-20' : 'opacity-100'} bg-blue-600 hover:bg-blue-700 border border-transparent text-sm lg:text-base text-white font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 focus:ring-offset-white transition py-3 px-4 dark:focus:ring-offset-gray-800">
-                  Registrar
+                  Publicar
                   {isSubmitting && ( // Si isSubmitting es true, muestra el spinner
                     <div className="animate-spin inline-block w-6 h-6 border-[3px] border-current border-t-transparent text-gray-400 rounded-full" role="status" aria-label="loading">
                       <span className="sr-only">Loading...</span>

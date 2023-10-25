@@ -15,7 +15,7 @@ import registrarPago from '../../assets/img/registrarPago.svg'
 const Servicios = () => {
     return (
         <>
-            <Header></Header>
+
             {/* <!-- Features --> */}
             <div className='flex justify-center items-center min-h-auto lg:mt-20' >
                 <div class="max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto ">

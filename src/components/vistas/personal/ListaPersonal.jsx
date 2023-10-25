@@ -7,8 +7,7 @@ import { Link } from 'react-router-dom'
 const ListaPersonal = () => {
   return (
     <>
-      <Header />
-      
+
 
       <div className="max-w-[115rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
 

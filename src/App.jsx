@@ -50,11 +50,14 @@ import { AuthProvider } from './auth/AuthContext';
 import VerPagos from './components/vistas/servicios/VerPagos';
 import Usuarios from './components/vistas/usuarios/Usuarios';
 import RegistrarUsuario from './components/vistas/usuarios/RegistrarUsuario';
+import Header from './components/reusables/Header';
 function App() {
   return (
 
+      
       <BrowserRouter>
         <AuthProvider>
+          <Header/>
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/" element={<Landing />} />

@@ -6,7 +6,7 @@ import Footer from '../../reusables/Footer'
 const ReporteIngresoSalida = () => {
   return (
     <>
-    <Header/>
+
     <div>ReporteIngresoSalida</div>
     <TablaAsistenciaEmpleados></TablaAsistenciaEmpleados>
     <Footer/>

@@ -11,7 +11,6 @@ const Personal = () => {
         <>
 
 
-        <Header></Header>
 
             {/* <!-- Card Blog --> */}
             <div className="max-w-[55rem] px-1 py-4 sm:px-6 lg:px-8 lg:py-16 mx-auto lg:mt-[-20px]">
