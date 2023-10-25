@@ -16,28 +16,28 @@ const Header = () => {
   const [userRole, setUserRole] = useState(null);
   useEffect(() => {
     if (user) {
-        fetchUserRole(user.uid).then((role) => {
-            setUserRole(role);
-        });
+      fetchUserRole(user.uid).then((role) => {
+        setUserRole(role);
+      });
     }
-}, [user]);
+  }, [user]);
 
-const fetchUserRole = async (uid) => {
-  try {
+  const fetchUserRole = async (uid) => {
+    try {
       const userRef = doc(db, "users", uid); // Asumiendo que tu colección se llama "users"
       const userSnapshot = await getDoc(userRef);
 
       if (userSnapshot.exists()) {
-          return userSnapshot.data().role; // Retorna el rol del usuario
+        return userSnapshot.data().role; // Retorna el rol del usuario
       } else {
-          console.error("No se encontró el documento del usuario");
-          return null;
+        console.error("No se encontró el documento del usuario");
+        return null;
       }
-  } catch (error) {
+    } catch (error) {
       console.error("Error al obtener el rol:", error);
       return null;
+    }
   }
-}
 
   const handleLogout = async () => {
     try {
@@ -88,8 +88,20 @@ const fetchUserRole = async (uid) => {
                 aria-expanded={menuOpen ? 'true' : 'false'}
                 onClick={() => setMenuOpen(!menuOpen)}
               >
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <rect y="3" width="24" height="2" fill="black" />
+                  <rect y="11" width="24" height="2" fill="black" />
+                  <rect y="19" width="24" height="2" fill="black" />
+                </svg>
                 <span className="sr-only">Open main menu</span>
               </button>
+
             </div>
             <div className={`${menuOpen ? '' : 'hidden'} justify-between items-center w-full lg:flex lg:w-auto lg:order-1`} id="mobile-menu-2">
 
@@ -136,7 +148,7 @@ const fetchUserRole = async (uid) => {
 
                 )}
 
-{user && userRole === 'guardia' && (
+                {user && userRole === 'guardia' && (
                   <>
 
                     <li>
@@ -144,7 +156,7 @@ const fetchUserRole = async (uid) => {
                         Servicios
                       </Link>
                     </li>
-                   <li>
+                    <li>
                       <Link to='/visitas' className="block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700">
                         Visitas
                       </Link>
@@ -158,7 +170,7 @@ const fetchUserRole = async (uid) => {
 
                 )}
 
-{user && userRole === 'usuario' && (
+                {user && userRole === 'usuario' && (
                   <>
                     <li>
                       <Link to='/anuncios' className="block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700">

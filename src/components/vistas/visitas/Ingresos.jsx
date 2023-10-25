@@ -16,6 +16,13 @@ const Ingresos = () => {
   const navigate = useNavigate();
   const handleOnSubmit = async (event) => {
     event.preventDefault();
+    setIsSubmitting(true);
+    if (!form.edificio) {
+      setErrorMessage("Por favor, seleccione un edificio para poder registrar.");
+      return;
+    }
+
+
     const formData = new FormData(event.target);
 
     try {
@@ -44,7 +51,11 @@ const Ingresos = () => {
       console.error("Error adding document: ", error);
       alert("Error: no esta conectado!");
     }
+    setIsSubmitting(false);
   };
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const [form, setForm] = useState({
     edificio: "",
@@ -236,7 +247,11 @@ const Ingresos = () => {
 
                 <div>
                   <label htmlFor="nombreCompleto" className="block text-sm text-gray-700 font-medium dark:text-white">Nombre Completo</label>
-                  <input type="text" name="nombreCompleto" id="nombreCompleto" value={form.direccion} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
+                  <input type="text"
+                    required
+                    aria-describedby="Complete el campo"
+                    name="nombreCompleto"
+                    id="nombreCompleto" value={form.direccion} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
                 </div>
                 {/* <!-- Grid --> */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-6">
@@ -271,9 +286,19 @@ const Ingresos = () => {
 
 
 
-
+              {errorMessage && <p className="text-xs text-red-600 mt-2">{errorMessage}</p>}
               <div className="mt-6 grid">
-                <button type="submit" className="inline-flex justify-center items-center gap-x-3 text-center bg-blue-600 hover:bg-blue-700 border border-transparent text-sm lg:text-base text-white font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 focus:ring-offset-white transition py-3 px-4 dark:focus:ring-offset-gray-800">Registrar</button>
+                <button
+                  type="submit"
+                  className="inline-flex justify-center items-center gap-x-3 text-center bg-blue-600 hover:bg-blue-700 border border-transparent text-sm lg:text-base text-white font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 focus:ring-offset-white transition py-3 px-4 dark:focus:ring-offset-gray-800">
+                  Registrar
+                  {isSubmitting && ( // Si isSubmitting es true, muestra el spinner
+                    <div className="animate-spin inline-block w-6 h-6 border-[3px] border-current border-t-transparent text-gray-400 rounded-full" role="status" aria-label="loading">
+                      <span className="sr-only">Loading...</span>
+                    </div>
+                  )}
+
+                </button>
               </div>
 
               <div className="mt-3 text-center">

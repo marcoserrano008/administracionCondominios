@@ -70,6 +70,10 @@ const Venta = () => {
   const storage = getStorage();
   const handleOnSubmit = async (event) => {
     event.preventDefault();
+    if (!form.edificio) {
+      setErrorMessage("Por favor, seleccione un edificio para poder publicar.");
+      return;
+    }
     setIsSubmitting(true);
     const formData = new FormData(event.target);
 
@@ -123,6 +127,8 @@ const Venta = () => {
     }
     setIsSubmitting(false);
   };
+
+  const [errorMessage, setErrorMessage] = useState('');
 
   const [isModalOpen, setModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -257,7 +263,10 @@ const Venta = () => {
 
               </div>
               {/* <!-- End Grid --> */}
+              {errorMessage && <p className="text-xs text-red-600 mt-2">{errorMessage}</p>}
+
               <div className="mt-6 grid">
+
                 <button
                   type="submit"
                   disabled={isSubmitting}

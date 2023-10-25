@@ -270,12 +270,8 @@ const TablaEdificios = () => {
                 onEditingRowSave={handleSaveRowEdits}
                 onEditingRowCancel={handleCancelRowEdits}
                 renderRowActions={({ row, table }) => (
-                    <Box sx={{ display: 'flex', gap: '1rem' }}>
-                        <Tooltip arrow placement="left" title="Edit">
-                            <IconButton onClick={() => table.setEditingRow(row)}>
-                                <Edit />
-                            </IconButton>
-                        </Tooltip>
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+
                         <Tooltip arrow placement="right" title="Delete">
                             <IconButton color="error" onClick={() => handleDeleteRow(row)}>
                                 <Delete />

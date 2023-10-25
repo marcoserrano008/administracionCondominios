@@ -14,6 +14,7 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
     const authInstance = getAuth();
     try {
       await signInWithEmailAndPassword(authInstance, email, password);
@@ -45,9 +46,13 @@ function Login() {
       navigate('/');
     } catch (error) {
       console.error("Error al iniciar sesión:", error);
+      setErrorMessage("Cuenta no valida.");
     }
+    setIsSubmitting(false);
   }
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   return (
 
@@ -111,11 +116,19 @@ function Login() {
                         <p className="hidden text-xs text-red-600 mt-2" id="email-error">Porfavor ingrese su contraseña</p>
                       </div>
 
-                      
-                      {/* ... código similar al anterior ... */}
 
-                      <Button className='bg-slate-200 hover:bg-slate-300' type="submit" >
+                      {/* ... código similar al anterior ... */}
+                      {errorMessage && <p className="text-xs text-red-600 mt-2">{errorMessage}</p>}
+
+                      <Button
+                        className='bg-slate-200 hover:bg-slate-300'
+                        type="submit" >
                         Iniciar Sesion
+                        {isSubmitting && ( // Si isSubmitting es true, muestra el spinner
+                        <div className="animate-spin inline-block w-6 h-6 border-[3px] border-current border-t-transparent text-orange-600 rounded-full" role="status" aria-label="loading">
+                            <span className="sr-only">Loading...</span>
+                          </div>
+                        )}
                       </Button>
                       {/* <button type="submit" className="...tus clases aquí...">Iniciar Sesion</button> */}
                     </div>
@@ -130,7 +143,7 @@ function Login() {
         </div>
       </div>
 
-    <Footer></Footer>
+      <Footer></Footer>
 
     </>
 
