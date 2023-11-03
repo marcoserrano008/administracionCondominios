@@ -10,31 +10,48 @@ import { Link, useNavigate } from 'react-router-dom';
 const RegistrarEdificio = () => {
 
   const navigate = useNavigate();
-  const handleOnSubmit = async (event) => { 
+
+  const handleOnSubmit = async (event) => {
     event.preventDefault();
     setIsSubmitting(true);
     const formData = new FormData(event.target);
 
+    // Construyendo el objeto data con la información del formulario
+    const edificioData = {
+      nombre_edificio: formData.get("nombre_edificio"),
+      cantidad_pisos: formData.get("cantidad_pisos"),
+      direccion: formData.get("direccion"),
+      celular: formData.get("celular"),
+      telefono: formData.get("telefono"),
+      correo: formData.get("correo")
+    };
+
     try {
-      const docRef = await addDoc(collection(db, "edificios"), {
-        nombre_edificio: formData.get("nombre_edificio"),
-        cantidad_pisos: formData.get("cantidad_pisos"),
-        direccion: formData.get("direccion"),
-        celular: formData.get("celular"),
-        telefono: formData.get("telefono"),
-        correo: formData.get("correo")
-
-
+      // Cambiando la URL a la de tu API de Laravel
+      const response = await fetch('http://127.0.0.1:8000/api/edificios', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          // Asegúrate de incluir cualquier cabecera adicional que tu API requiera, como tokens de autenticación
+        },
+        body: JSON.stringify(edificioData),
       });
-      console.log("Document written with ID: ", docRef.id);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log("Document written with ID: ", result.id); // Ajusta esto según la respuesta de tu API
       setModalOpen(true);
 
     } catch (error) {
       console.error("Error adding document: ", error);
-      alert("Error: no esta conectado!");
+      alert("Error: no se pudo conectar con la API!");
     }
     setIsSubmitting(false);
   };
+
 
   const [isModalOpen, setModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);

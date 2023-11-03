@@ -31,29 +31,38 @@ import { Delete, Edit } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 
 const fetchBuildings = async () => {
-    const db = getFirestore(app);
-    const edificiosCol = collection(db, "ingresos");
-    const edificioSnapshot = await getDocs(edificiosCol);
-    return edificioSnapshot.docs.map(doc => {
-        const data = doc.data();
-
-        const date = data.fechaHoraIngreso.toDate();
+    try {
+      // Realiza una solicitud GET a tu API de Laravel
+      const response = await fetch('http://127.0.0.1:8000/api/ingresos');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const ingresos = await response.json();
+  
+      // Procesa la respuesta y formatea los datos
+      return ingresos.map(ingreso => {
+        // Formatea la fecha de ingreso de la cadena de fecha y hora
+        const date = new Date(ingreso.fechaHoraIngreso);
         const formattedDate = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
-
+  
         return {
-            edificio: data.edificio,
-            numeroDepartamento: data.numeroDepartamento,
-            nombreCompleto: data.nombreCompleto,
-            registroSalida: data.registroSalida,
-            motivoVisita: data.motivoVisita,
-            tipoVisitante: data.tipoVisitante,
-            fechaHoraIngreso: formattedDate,
-            // fechaHoraIngreso: data.fechaHoraIngreso,
-
-            id: doc.id
+          edificio: ingreso.edificio,
+          numeroDepartamento: ingreso.numeroDepartamento,
+          nombreCompleto: ingreso.nombreCompleto,
+          registroSalida: ingreso.registroSalida,
+          motivoVisita: ingreso.motivoVisita,
+          tipoVisitante: ingreso.tipoVisitante,
+          fechaHoraIngreso: formattedDate,
+          idIngreso: ingreso.idIngreso,
+          id: ingreso.id  // Usa el id de la respuesta de Laravel
         };
-    });
-};
+      });
+    } catch (error) {
+      console.error("Error fetching buildings: ", error);
+      return []; // Retorna un arreglo vacío en caso de error
+    }
+  };
+  
 
 
 
@@ -108,22 +117,32 @@ const TablaIngresosSalidas = () => {
     //Eliminar datos
 
     const deletePropietario = async (id) => {
-        const db = getFirestore(app);
-        const edificioDoc = doc(db, "ingresos", id);
-        await deleteDoc(edificioDoc);
+        try {
+            const response = await fetch(`http://127.0.0.1:8000/api/ingresos/${id}`, {
+                method: 'DELETE', // Método HTTP para operaciones de eliminación
+            });
+    
+            // Verifica si la respuesta es exitosa
+            if (!response.ok) {
+                throw new Error(`Error: ${response.status}`);
+            }
+            console.log("Propietario eliminado con éxito");
+        } catch (error) {
+            console.error("Error al eliminar propietario: ", error);
+        }
     };
-
-
+    
     const handleDeleteRow = useCallback(
         async (row) => {
-            if (!confirm(`Are you sure you want to delete ${row.getValue('edificio')}`)) {
+            if (!confirm(`Confirmar para eliminar`)) {
                 return;
             }
             await deletePropietario(row.original.id);
-            tableData.splice(row.index, 1);
-            setTableData([...tableData]);
+            // Actualiza la tabla para reflejar la eliminación
+            const newData = tableData.filter(item => item.id !== row.original.id);
+            setTableData(newData);
         },
-        [tableData],
+        [tableData, setTableData],
     );
 
 
@@ -256,6 +275,15 @@ const TablaIngresosSalidas = () => {
             {
                 accessorKey: 'registroSalida',
                 header: 'Registró su salida',
+
+                muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
+                    ...getCommonEditTextFieldProps(cell),
+
+                }),
+            },
+            {
+                accessorKey: 'idIngreso',
+                header: 'Codigo Ingreso',
 
                 muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
                     ...getCommonEditTextFieldProps(cell),

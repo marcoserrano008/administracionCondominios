@@ -11,27 +11,44 @@ const RegistrarResidente = () => {
   const handleOnSubmit = async (event) => {
     event.preventDefault();
     setIsSubmitting(true);
-    const formData = new FormData(event.target);
+
+    // Creamos un objeto con los datos del formulario
+    const formData = {
+        edificio: form.edificio,
+        numeroDepartamento: form.numeroDepartamento,
+        nombre: form.nombre,
+        apellidoPaterno: form.apellidoPaterno,
+        apellidoMaterno: form.apellidoMaterno,
+        ci: form.ci,
+        contacto: form.contacto,
+    };
 
     try {
-      const docRef = await addDoc(collection(db, "propietarios"), {
-        edificio: formData.get("edificio"),
-        numeroDepartamento: formData.get("numeroDepartamento"),
-        nombre:form.nombre,
-        apellidoPaterno:form.apellidoPaterno,
-        apellidoMaterno:form.apellidoMaterno,
-        ci:form.ci,
-        contacto:form.contacto,
+      // Hacemos la petición POST a la API de Laravel
+      const response = await fetch('http://127.0.0.1:8000/api/propietarios', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          // Incluir otros headers si es necesario, como tokens de autenticación
+        },
+        body: JSON.stringify(formData), // Convertimos el objeto de formulario a JSON
       });
-      console.log("Document written with ID: ", docRef.id);
+
+      if (!response.ok) {
+        // Si la respuesta no es 2xx, lanzamos un error
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("Propietario registrado con ID: ", data.id); // Suponiendo que la API devuelve un objeto con un ID
       setModalOpen(true);
 
     } catch (error) {
-      console.error("Error adding document: ", error);
-      alert("Error: no esta conectado!");
+      console.error("Error al añadir propietario: ", error);
+      alert("Error: no se pudo conectar con el servidor!");
     }
     setIsSubmitting(false);
-  };
+};
 
   const [isModalOpen, setModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -43,11 +60,11 @@ const RegistrarResidente = () => {
   const [form, setForm] = useState({
     edificio: '',
     numeroDepartamento: '',
-    nombre:'',
-    apellidoPaterno:'',
-    apellidoMaterno:'',
-    ci:'',
-    contacto:'',
+    nombre: '',
+    apellidoPaterno: '',
+    apellidoMaterno: '',
+    ci: '',
+    contacto: '',
   });
 
   const handleChange = (e) => {
@@ -62,32 +79,36 @@ const RegistrarResidente = () => {
   const [edificios, setEdificios] = useState([]);
 
   useEffect(() => {
-    const fetchEdificios = async () => {
-      const edificiosCollection = collection(db, "edificios");
-      const edificiosSnapshot = await getDocs(edificiosCollection);
-      const edificiosList = edificiosSnapshot.docs.map(doc => doc.data().nombre_edificio);
-      setEdificios(edificiosList);
-    }
+    const fetchEdificiosYDepartamentos = async () => {
+      try {
+        const response = await fetch('http://127.0.0.1:8000/api/edificios-departamentos');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        setEdificios(data);
+      } catch (error) {
+        console.error("Error fetching data: ", error);
+      }
+    };
 
-    fetchEdificios();
+    fetchEdificiosYDepartamentos();
   }, []);
 
+  //cargar departamentos
+  const [departamentos, setDepartamentos] = useState([]);
 
-    //cargar departamentos
-    const [departamentos, setDepartamentos] = useState([]);
+  const handleEdificioChange = async (e) => {
+    handleChange(e); // Continúa actualizando el estado del formulario.
 
-    const handleEdificioChange = async (e) => {
-      handleChange(e); // Continua actualizando el estado del formulario.
-  
-      const selectedEdificio = e.target.value;
-      const departamentosCollection = collection(db, "departamentos");
-      const departamentosQuery = query(departamentosCollection, where("edificio", "==", selectedEdificio));
-      const departamentosSnapshot = await getDocs(departamentosQuery);
-      const departamentosList = departamentosSnapshot.docs.map(doc => doc.data().numeroDepartamento);
-      setDepartamentos(departamentosList);
-    };
-  
-  
+    const selectedEdificio = e.target.value;
+    const edificioData = edificios.find(edificio => edificio.nombre_edificio === selectedEdificio);
+    let departamentosList = edificioData?.departamentos?.split(',') || ["No asignado"];
+    setDepartamentos(departamentosList);
+  };
+
+
+
 
   return (
     <>
@@ -126,34 +147,34 @@ const RegistrarResidente = () => {
                       className="py-3 px-4 pr-9 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400"
                     >
                       <option value="" disabled={form.edificio !== ""}>Seleccione un edificio...</option>
-                      {edificios.map(edificio => (
-                        <option key={edificio} value={edificio}>
-                          {edificio}
+                      {edificios.map((edificioObj) => (
+                        <option key={edificioObj.nombre_edificio} value={edificioObj.nombre_edificio}>
+                          {edificioObj.nombre_edificio}
                         </option>
                       ))}
                     </select>
                   </div>
 
 
-                    <div>
-                      <label htmlFor="numeroDepartamento" className="block text-sm text-gray-700 font-medium dark:text-white">Nro. de departamento</label>
-                      <select
-                        type="text"
-                        name="numeroDepartamento"
-                        id="numeroDepartamento"
-                        value={form.numeroDepartamento}
-                        onChange={handleChange}
-                        className="py-3 px-4 pr-9 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400"
-                      >
-                        {departamentos.map(depto => (
-                          <option key={depto} value={depto}>
-                            {depto}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                  <div>
+                    <label htmlFor="numeroDepartamento" className="block text-sm text-gray-700 font-medium dark:text-white">Nro. de departamento</label>
+                    <select
+                      type="text"
+                      name="numeroDepartamento"
+                      id="numeroDepartamento"
+                      value={form.numeroDepartamento}
+                      onChange={handleChange}
+                      className="py-3 px-4 pr-9 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400"
+                    >
+                      {departamentos.map((depto, index) => (
+                        <option key={index} value={depto}>
+                          {depto === "No asignado" ? "No asignado" : depto}
+                        </option>
+                      ))}
+                    </select>
                   </div>
-        
+                </div>
+
 
               </div>
               {/* <!-- End Grid --> */}
@@ -163,17 +184,17 @@ const RegistrarResidente = () => {
               <div className="grid mt-5 grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-6">
                 <div>
                   <label htmlFor="nombre" className="block text-sm text-gray-700 font-medium dark:text-white">{'Nombre(s)'}</label>
-                  <input type="text" 
-                  required
-                  aria-describedby="Complete el campo"
-                  name="nombre" id="nombre" value={form.nombre} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
+                  <input type="text"
+                    required
+                    aria-describedby="Complete el campo"
+                    name="nombre" id="nombre" value={form.nombre} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
                 </div>
 
                 <div>
                   <label htmlFor="apellidoPaterno" className="block text-sm text-gray-700 font-medium dark:text-white">Apellido Paterno</label>
-                  <input type="text" 
-                  
-                  name="apellidoPaterno" id="apellidoPaterno" value={form.apellidoPaterno} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
+                  <input type="text"
+
+                    name="apellidoPaterno" id="apellidoPaterno" value={form.apellidoPaterno} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
                 </div>
 
                 <div>
@@ -190,26 +211,26 @@ const RegistrarResidente = () => {
 
                 <div>
                   <label htmlFor="ci" className="block text-sm text-gray-700 font-medium dark:text-white">CI</label>
-                  <input type="text" 
-                  required
-                  aria-describedby="Complete el campo"
-                  name="ci" id="ci" value={form.ci} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
+                  <input type="text"
+                    required
+                    aria-describedby="Complete el campo"
+                    name="ci" id="ci" value={form.ci} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
                 </div>
 
                 <div>
                   <label htmlFor="fechaNacimiento" className="block text-sm text-gray-700 font-medium dark:text-white">Fecha de Nacimiento</label>
-                  <input type="date" 
-                  required
-                  aria-describedby="Complete el campo"
-                  name="fechaNacimiento" id="fechaNacimiento" value={form.fechaNacimiento} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
+                  <input type="date"
+                    required
+                    aria-describedby="Complete el campo"
+                    name="fechaNacimiento" id="fechaNacimiento" value={form.fechaNacimiento} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
                 </div>
 
                 <div>
                   <label htmlFor="contacto" className="block text-sm text-gray-700 font-medium dark:text-white">Numero de contacto</label>
                   <input type="number"
-                  required
-                  aria-describedby="Complete el campo"
-                  name="contacto" id="contacto" value={form.contacto} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
+                    required
+                    aria-describedby="Complete el campo"
+                    name="contacto" id="contacto" value={form.contacto} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
                 </div>
 
               </div>
@@ -218,9 +239,9 @@ const RegistrarResidente = () => {
 
               <div className="mt-6 grid">
                 <button type="submit"
-                disabled={isSubmitting}
-                className="inline-flex justify-center items-center gap-x-3 text-center bg-blue-600 hover:bg-blue-700 border border-transparent text-sm lg:text-base text-white font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 focus:ring-offset-white transition py-3 px-4 dark:focus:ring-offset-gray-800">
-                {isSubmitting && ( // Si isSubmitting es true, muestra el spinner
+                  disabled={isSubmitting}
+                  className="inline-flex justify-center items-center gap-x-3 text-center bg-blue-600 hover:bg-blue-700 border border-transparent text-sm lg:text-base text-white font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 focus:ring-offset-white transition py-3 px-4 dark:focus:ring-offset-gray-800">
+                  {isSubmitting && ( // Si isSubmitting es true, muestra el spinner
                     <div className="animate-spin inline-block w-6 h-6 border-[3px] border-current border-t-transparent text-gray-400 rounded-full" role="status" aria-label="loading">
                       <span className="sr-only">Loading...</span>
                     </div>
@@ -235,7 +256,7 @@ const RegistrarResidente = () => {
             <Link to={'/propietariosDepartamentos'}>
               <div className="mt-6 grid">
                 <button className="inline-flex justify-center items-center gap-x-3 text-center bg-slate-600 hover:bg-slate-700 border border-transparent text-sm lg:text-base text-white font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-slate-600 focus:ring-offset-2 focus:ring-offset-white transition py-3 px-4 dark:focus:ring-offset-gray-800">Regresar
-                
+
                 </button>
               </div>
             </Link>

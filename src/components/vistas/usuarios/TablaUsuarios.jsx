@@ -30,21 +30,29 @@ import { Delete, Edit } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 
 const fetchUsers = async () => {
-  const db = getFirestore(app);
-  const edificiosCol = collection(db, "users");
-  const edificioSnapshot = await getDocs(edificiosCol);
-  return edificioSnapshot.docs.map(doc => {
-      const data = doc.data();
-      return {
-          nombre: data.nombre,
-          apellidoPaterno: data.apellidoPaterno,
-          apellidoMaterno: data.apellidoMaterno,
-          email: data.email,
-          role: data.role,
-          id: doc.id,
-      };
-  });
-};
+    try {
+      const response = await fetch('http://127.0.0.1:8000/api/users');
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const users = await response.json();
+  
+      return users.map(user => ({
+        nombre: user.name,  // Asumiendo que el campo se llama 'name' en tu API.
+        apellidoPaterno: user.apellidoPaterno,
+        apellidoMaterno: user.apellidoMaterno,
+        email: user.email,
+        role: user.rol,  // Asegúrate que 'rol' es el campo correcto que viene de la API.
+        id: user.id,
+      }));
+  
+    } catch (e) {
+      console.error("Error fetching users:", e);
+      return [];  // Devuelve un arreglo vacío en caso de error.
+    }
+  };
 
 
 
@@ -99,23 +107,35 @@ const TablaUsuarios = () => {
     //Eliminar datos
 
     const deletePropietario = async (id) => {
-        const db = getFirestore(app);
-        const edificioDoc = doc(db, "users", id);
-        await deleteDoc(edificioDoc);
-    };
-
-
-    const handleDeleteRow = useCallback(
+        try {
+          const response = await fetch(`http://127.0.0.1:8000/api/users/${id}`, {
+            method: 'DELETE', // Método HTTP para realizar una eliminación
+          });
+      
+          if (!response.ok) {
+            throw new Error(`Error: ${response.status}`);
+          }
+          
+          // Si quieres hacer algo con la respuesta, como verificar un mensaje de éxito:
+          const result = await response.json();
+          console.log(result); // Imprime el resultado por si la API envía una respuesta
+        } catch (error) {
+          console.error('Error al eliminar el propietario:', error);
+        }
+      };
+      
+      const handleDeleteRow = useCallback(
         async (row) => {
-            if (!confirm(`Are you sure you want to delete ${row.getValue('edificio')}`)) {
-                return;
-            }
-            await deletePropietario(row.original.id);
-            tableData.splice(row.index, 1);
-            setTableData([...tableData]);
+          const edificio = row.getValue('edificio'); // Asegúrate de que 'edificio' es la propiedad correcta
+          if (!confirm(`Confirmar para eliminar`)) {
+            return;
+          }
+          await deletePropietario(row.original.id);
+          // Actualizar el estado para reflejar la eliminación
+          setTableData(currentData => currentData.filter(item => item.id !== row.original.id));
         },
-        [tableData],
-    );
+        [setTableData],
+      );
 
     
     const createHeaders = (keys) => {
@@ -262,18 +282,14 @@ const TablaUsuarios = () => {
                 onEditingRowSave={handleSaveRowEdits}
                 onEditingRowCancel={handleCancelRowEdits}
                 renderRowActions={({ row, table }) => (
-                    <Box sx={{ display: 'flex', gap: '1rem' }}>
-                        <Tooltip arrow placement="left" title="Edit">
-                            <IconButton onClick={() => table.setEditingRow(row)}>
-                                <Edit />
-                            </IconButton>
-                        </Tooltip>
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+
                         <Tooltip arrow placement="right" title="Delete">
                             <IconButton color="error" onClick={() => handleDeleteRow(row)}>
                                 <Delete />
                             </IconButton>
                         </Tooltip>
-                        
+
                     </Box>
                 )}
                 renderTopToolbarCustomActions={() => (

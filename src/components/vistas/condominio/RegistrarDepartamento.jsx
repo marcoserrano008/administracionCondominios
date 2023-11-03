@@ -8,31 +8,54 @@ import { Link, useNavigate } from 'react-router-dom';
 
 const RegistrarDepartamento = () => {
   const navigate = useNavigate();
+
   const handleOnSubmit = async (event) => {
     event.preventDefault();
     setIsSubmitting(true);
     const formData = new FormData(event.target);
 
-    try {
-      const docRef = await addDoc(collection(db, "departamentos"), {
+    // Construyendo el objeto data con la información del formulario
+    const deptoData = {
         edificio: formData.get("edificio"),
         numeroDepartamento: formData.get("numeroDepartamento"),
         estado: formData.get("estado"),
         telefono: formData.get("telefono"),
         celular: formData.get("celular"),
         dormitorios: formData.get("dormitorios"),
-        baños: formData.get("baños"),
+        banios: formData.get("baños"),
         garaje: formData.get("garaje"),
         superficie: formData.get("superficie"),
-
+    };
+    console.log(deptoData)
+    try {
+      // Cambiando la URL a la de tu API de Laravel
+      const response = await fetch('http://127.0.0.1:8000/api/departamentos', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          // Asegúrate de incluir cualquier cabecera adicional que tu API requiera, como tokens de autenticación
+        },
+        body: JSON.stringify(deptoData),
       });
-      console.log("Document written with ID: ", docRef.id);
-      setModalOpen(true);
-     
+
+      if (response.headers.get("content-type")?.includes("application/json")) {
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        console.log("Document written with ID: ", result.id);
+        setModalOpen(true);
+      } else {
+        // No es una respuesta JSON, manejar según sea necesario
+        const text = await response.text();
+        throw new Error(`No se recibió una respuesta JSON: ${text}`);
+      }
 
     } catch (error) {
       console.error("Error adding document: ", error);
-      alert("Error: no esta conectado!");
+      alert("Error: no se pudo conectar con la API!");
     }
     setIsSubmitting(false);
   };
@@ -69,11 +92,18 @@ const RegistrarDepartamento = () => {
 
   useEffect(() => {
     const fetchEdificios = async () => {
-      const edificiosCollection = collection(db, "edificios");
-      const edificiosSnapshot = await getDocs(edificiosCollection);
-      const edificiosList = edificiosSnapshot.docs.map(doc => doc.data().nombre_edificio);
-      setEdificios(edificiosList);
-    }
+      try {
+        const response = await fetch('http://127.0.0.1:8000/api/edificios');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        const nombresEdificios = data.map(item => item.nombre_edificio);
+        setEdificios(nombresEdificios);
+      } catch (error) {
+        console.error("Error al obtener los edificios:", error);
+      }
+    };
 
     fetchEdificios();
   }, []);

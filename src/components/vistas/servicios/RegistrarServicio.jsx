@@ -12,26 +12,44 @@ const RegistrarServicio = () => {
     event.preventDefault();
     setIsSubmitting(true);
     const formData = new FormData(event.target);
-
+  
+    // Construir el cuerpo de la solicitud a partir de los datos del formulario
+    const requestBody = {
+      nombre: formData.get("nombre"),
+      costo: formData.get("costo"),
+      cobro: formData.get("cobro"),
+      contacto: formData.get("contacto"),
+      encargado: formData.get("encargado"),
+    };
+  
     try {
-      const docRef = await addDoc(collection(db, "servicios"), {
-        nombre: formData.get("nombre"),
-        costo: formData.get("costo"),
-        cobro: formData.get("cobro"),
-        contacto: formData.get("contacto"),
-        encargado: formData.get("encargado"),
+      // Realizar la solicitud POST a la API de Laravel
+      const response = await fetch('http://127.0.0.1:8000/api/servicios', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          // Añade aquí cualquier otro encabezado que necesites, como tokens de autenticación.
+        },
+        body: JSON.stringify(requestBody),
       });
-      console.log("Document written with ID: ", docRef.id);
+  
+      // Comprobar si la solicitud fue exitosa
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+  
+      const data = await response.json();
+      console.log("Service registered with ID: ", data.id);
       setModalOpen(true);
-
-
-
+  
     } catch (error) {
-      console.error("Error adding document: ", error);
-      alert("Error: no esta conectado!");
+      console.error("Error registering service: ", error);
+      alert("Error: ¡no se pudo conectar con la API!");
     }
     setIsSubmitting(false);
   };
+  
+  
 
   const [isModalOpen, setModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);

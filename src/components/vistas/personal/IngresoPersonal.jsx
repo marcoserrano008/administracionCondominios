@@ -14,31 +14,45 @@ const IngresoPersonal = () => {
   const navigate = useNavigate();
   const handleOnSubmit = async (event) => {
     event.preventDefault();
-
+  
+    // Verificación de los campos requeridos
     if (!form.cargo || !form.nombre) {
       setErrorMessage("Por favor, seleccione tanto el Cargo como el Nombre antes de registrar.");
       return;
     }
-    const formData = new FormData(event.target);
-
+  
+    // Preparar los datos para enviar
+    const asistenciaData = {
+      cargo: form.cargo,
+      nombre: form.nombre,
+      fechaHoraIngreso: fechaHoraIngreso, // Asegúrate de tener esta fecha con el formato adecuado
+      // Valor predeterminado para la salida
+    };
+  
     try {
-      const docRef = await addDoc(collection(db, "asistenciaEmpleados"), {
-        cargo: form.cargo,
-        nombre: form.nombre,
-        fechaHoraIngreso: fechaHoraIngreso,
-        fechaHoraSalida: 'No registrado'
+      // Realizar la solicitud POST a la API de Laravel
+      const response = await fetch('http://127.0.0.1:8000/api/asistencia-empleados', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          // 'Authorization': 'Bearer <tu-token>' // Si necesitas autenticación
+        },
+        body: JSON.stringify(asistenciaData) // Convertimos el objeto a un string JSON
       });
-      console.log("Document written with ID: ", docRef.id);
-      console.log(docRef.idIngreso)
-
-      // alert("Registro satisfactorio!");
-
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  
+      const result = await response.json(); // Obtenemos la respuesta
+      console.log("Registro satisfactorio, ID:", result.id); // Suponiendo que la API devuelve un objeto con un 'id'
+  
+      // Acciones a seguir después de un registro exitoso
       setModalOpen(true);
-
-
+  
     } catch (error) {
-      console.error("Error adding document: ", error);
-      alert("Error: no esta conectado!");
+      console.error("Error registrando la asistencia: ", error);
+      alert("Error: no se pudo conectar con el servidor.");
     }
   };
 
@@ -47,7 +61,6 @@ const IngresoPersonal = () => {
     nombre: '',
     fechaHoraIngreso:'',
     fechaHoraSalida:'',
-
   });
 
   const handleChange = (e) => {
@@ -63,37 +76,44 @@ const IngresoPersonal = () => {
 
   useEffect(() => {
     const fetchCargos = async () => {
-      const cargosCollection = collection(db, "personal");
-      const cargosSnapshot = await getDocs(cargosCollection);
-      // Usando un Set para garantizar valores únicos
-      const cargosSet = new Set(cargosSnapshot.docs.map(doc => doc.data().cargo));
+      try {
+        const response = await fetch('http://127.0.0.1:8000/api/personal');
+        if (!response.ok) throw new Error(response.statusText);
 
-      // Convertimos el Set a un array y lo establecemos en el estado.
-      setCargos([...cargosSet]);
-
-    }
+        const personalList = await response.json();
+        const cargosSet = new Set(personalList.map(personal => personal.cargo));
+        setCargos([...cargosSet]);
+      } catch (error) {
+        console.error("Error al obtener cargos:", error);
+      }
+    };
 
     fetchCargos();
   }, []);
 
-
   //Ver la fecha y hora
-  const [fechaHoraIngreso, setFechaHoraIngreso] = useState(getGTMMinus4Date());
+  const [fechaHoraIngreso, setFechaHoraIngreso] = useState(formatDateToDDMMAAHHMM(getGTMMinus4Date()));
 
 
   //cargar nombres
-  const [nombres, setnombres] = useState([]);
+  const [nombres, setNombres] = useState([]);
 
   const handleCargoChange = async (e) => {
-    handleChange(e); // Continua actualizando el estado del formulario.
+    handleChange(e); // Actualiza el estado del formulario
 
     const selectedCargo = e.target.value;
-    const nombresCollection = collection(db, "personal");
-    const nombresQuery = query(nombresCollection, where("cargo", "==", selectedCargo));
-    const nombresSnapshot = await getDocs(nombresQuery);
-    const nombresList = nombresSnapshot.docs.map(doc =>
-      `${doc.data().nombre} ${doc.data().apellidoPaterno} ${doc.data().apellidoMaterno}`);
-    setnombres(nombresList);
+    try {
+      const response = await fetch('http://127.0.0.1:8000/api/personal');
+      if (!response.ok) throw new Error(response.statusText);
+
+      const personalList = await response.json();
+      const nombresList = personalList
+        .filter(personal => personal.cargo === selectedCargo)
+        .map(personal => `${personal.nombre} ${personal.apellidoPaterno} ${personal.apellidoMaterno}`);
+      setNombres(nombresList);
+    } catch (error) {
+      console.error("Error al obtener nombres:", error);
+    }
   };
 
   //mostrar un modal para el ingreso e imprimir ticket
@@ -250,7 +270,7 @@ const IngresoPersonal = () => {
 
                 {/* Content */}
                 <h3 className="text-xl sm:text-2xl font-bold mb-4">Ingreso registrado con éxito</h3>
-                <p className="text-sm sm:text-base leading-relaxed text-gray-500">{fechaHoraIngreso.toLocaleString()}</p>
+               
 
                 {/* Buttons */}
                 <div className="mt-8 flex justify-center items-center space-x-3">
@@ -295,6 +315,18 @@ function getGTMMinus4Date() {
 
   return now; // Retorna el objeto Date
 }
+
+// Función para formatear la fecha en el formato "DD/MM/AA HH:MM"
+function formatDateToDDMMAAHHMM(date) {
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Meses van de 0 a 11
+  const year = date.getFullYear().toString().substr(-2); // Solo los últimos dos dígitos
+  const hours = date.getHours().toString().padStart(2, '0');
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+
+  return `${day}/${month}/${year} ${hours}:${minutes}`;
+}
+
 
 
 export default IngresoPersonal

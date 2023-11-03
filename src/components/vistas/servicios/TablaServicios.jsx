@@ -30,20 +30,25 @@ import { Link, useNavigation } from 'react-router-dom';
 
 
 const fetchBuildings = async () => {
-  const db = getFirestore(app);
-  const departamentosCol = collection(db, "servicios");
-  const departamentoSnapshot = await getDocs(departamentosCol);
-  return departamentoSnapshot.docs.map(doc => {
-    const data = doc.data();
-    return {
-      nombre: data.nombre,
-      costo: data.costo,
-      cobro: data.cobro,
-      contacto: data.contacto,
-      encargado: data.encargado,
-      id: doc.id
-    };
-  });
+  try {
+    const response = await fetch('http://127.0.0.1:8000/api/servicios');
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data.map(servicio => {
+      return {
+        nombre: servicio.nombre,
+        costo: servicio.costo,
+        cobro: servicio.cobro,
+        contacto: servicio.contacto,
+        encargado: servicio.encargado,
+        id: servicio.id
+      };
+    });
+  } catch (error) {
+    console.error('Error fetching buildings:', error);
+  }
 };
 
 const TablaServicios = () => {
@@ -70,11 +75,24 @@ const TablaServicios = () => {
   };
 
   //Editar los datos
-
   const updateBuilding = async (id, updatedBuilding) => {
-    const db = getFirestore(app);
-    const departamentosDoc = doc(db, "servicios", id);
-    await updateDoc(departamentosDoc, updatedBuilding);
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/api/servicios/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          // 'Authorization': 'Bearer YOUR_TOKEN_HERE', // Añade tu token de autorización si es necesario
+        },
+        body: JSON.stringify(updatedBuilding)
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      return await response.json(); // Puedes retornar los datos actualizados si tu API los envía de vuelta
+    } catch (error) {
+      console.error('Error updating building:', error);
+    }
   };
 
 
@@ -96,15 +114,27 @@ const TablaServicios = () => {
   //Eliminar datos
 
   const deleteBuilding = async (id) => {
-    const db = getFirestore(app);
-    const departamentosDoc = doc(db, "servicios", id);
-    await deleteDoc(departamentosDoc);
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/api/servicios/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          // 'Authorization': 'Bearer YOUR_TOKEN_HERE', // Añade tu token de autorización si es necesario
+        }
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      // No es necesario retornar nada a menos que tu API envíe una respuesta
+    } catch (error) {
+      console.error('Error deleting building:', error);
+    }
   };
-
 
   const handleDeleteRow = useCallback(
     async (row) => {
-      if (!confirm(`Are you sure you want to delete ${row.getValue('nombre')}`)) {
+      if (!confirm(`Confirme para borrar ${row.getValue('nombre')}`)) {
         return;
       }
       await deleteBuilding(row.original.id);

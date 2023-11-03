@@ -30,23 +30,33 @@ import { Delete, Edit } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 
 const fetchBuildings = async () => {
-    const db = getFirestore(app);
-    const edificiosCol = collection(db, "anuncios");
-    const edificioSnapshot = await getDocs(edificiosCol);
-    return edificioSnapshot.docs.map(doc => {
-        const data = doc.data();
-        return {
-            edificio: data.edificio,
-            numeroDepartamento: data.numeroDepartamento,
-            tipo: data.tipo,
-            precio: data.precio,
-            contacto1: data.contacto1,
-            contacto2: data.contacto2,
-            descripcion: data.descripcion,
-            id: doc.id
-        };
-    });
-};
+    try {
+      // Realizar petición GET a tu API de Laravel
+      const response = await fetch('http://127.0.0.1:8000/api/anuncios');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      // Parsear la respuesta JSON
+      const data = await response.json();
+      
+      // Mapear los datos recibidos a la estructura que necesita tu aplicación
+      return data.map(anuncio => ({
+        edificio: anuncio.edificio,
+        numeroDepartamento: anuncio.numeroDepartamento,
+        tipo: anuncio.tipo,
+        precio: anuncio.precio,
+        contacto1: anuncio.contacto1,
+        contacto2: anuncio.contacto2,
+        descripcion: anuncio.descripcion,
+        id: anuncio.id
+        // Agrega aquí más campos si son necesarios
+      }));
+    } catch (error) {
+      console.error("Error fetching buildings:", error);
+      return []; // Retorna un arreglo vacío o maneja el error como prefieras
+    }
+  };
+  
 
 const TablaAnuncios = () => {
     const [createModalOpen, setCreateModalOpen] = useState(false);
@@ -96,27 +106,45 @@ const TablaAnuncios = () => {
     };
 
 
-    //Eliminar datos
+//Eliminar datos
 
-    const deletePropietario = async (id) => {
-        const db = getFirestore(app);
-        const edificioDoc = doc(db, "anuncios", id);
-        await deleteDoc(edificioDoc);
-    };
-
-
-    const handleDeleteRow = useCallback(
-        async (row) => {
-            if (!confirm(`Are you sure you want to delete ${row.getValue('edificio')}`)) {
-                return;
-            }
-            await deletePropietario(row.original.id);
-            tableData.splice(row.index, 1);
-            setTableData([...tableData]);
+const deletePropietario = async (id) => {
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/api/anuncios/${id}`, {
+        method: 'DELETE',
+        // Si tu API requiere un header específico para la autorización o cualquier otro,
+        // debes incluirlo en la configuración de la solicitud.
+        headers: {
+          'Content-Type': 'application/json',
+          // 'Authorization': 'Bearer YOUR_TOKEN_HERE', // Ejemplo de como añadir un token de autorización
         },
-        [tableData],
-    );
-
+      });
+  
+      if (!response.ok) {
+        // Si el servidor responde con un error, lanzamos una excepción
+        throw new Error(`Error al eliminar: ${response.statusText}`);
+      }
+      
+      // Aquí puedes agregar código adicional si necesitas procesar la respuesta.
+  
+    } catch (error) {
+      console.error("Error al eliminar el propietario:", error);
+      // Aquí puedes manejar el error, como mostrar un mensaje al usuario
+    }
+  };
+  
+  const handleDeleteRow = useCallback(
+    async (row) => {
+      if (!confirm(`Confirmar para eliminar`)) {
+        return;
+      }
+      await deletePropietario(row.original.id);
+      const updatedTableData = tableData.filter((item) => item.id !== row.original.id);
+      setTableData(updatedTableData);
+    },
+    [tableData],
+  );
+  
     
     const createHeaders = (keys) => {
         const result = []
@@ -282,18 +310,14 @@ const TablaAnuncios = () => {
                 onEditingRowSave={handleSaveRowEdits}
                 onEditingRowCancel={handleCancelRowEdits}
                 renderRowActions={({ row, table }) => (
-                    <Box sx={{ display: 'flex', gap: '1rem' }}>
-                        <Tooltip arrow placement="left" title="Edit">
-                            <IconButton onClick={() => table.setEditingRow(row)}>
-                                <Edit />
-                            </IconButton>
-                        </Tooltip>
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+
                         <Tooltip arrow placement="right" title="Delete">
                             <IconButton color="error" onClick={() => handleDeleteRow(row)}>
                                 <Delete />
                             </IconButton>
                         </Tooltip>
-                            
+
                     </Box>
                 )}
                 renderTopToolbarCustomActions={() => (

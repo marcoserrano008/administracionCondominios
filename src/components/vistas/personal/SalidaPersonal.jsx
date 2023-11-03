@@ -20,32 +20,39 @@ const SalidaPersonal = () => {
       setErrorMessage("Por favor, seleccione tanto el Cargo como el Nombre antes de registrar.");
       return;
     }
-    const formData = new FormData(event.target);
-
-    try {
-      // 1. Encuentra el empleado seleccionado en el array 'nombres'.
-      const selectedEmpleado = nombres.find(emp => emp.nombreCompleto === form.nombre);
-
-      // Si encontramos al empleado seleccionado, actualizamos su documento en Firestore.
-      if (selectedEmpleado) {
-        const empleadoRef = doc(db, "asistenciaEmpleados", selectedEmpleado.id);
-        const fechaHoraSalidaTimestamp = Timestamp.fromDate(fechaHoraSalida); // convierte el objeto Date a Timestamp
-
-        await updateDoc(empleadoRef, {
-          fechaHoraSalida: fechaHoraSalidaTimestamp
+  
+    // 1. Encuentra el empleado seleccionado en el array 'nombres'.
+    const selectedEmpleado = nombres.find(emp => emp.nombreCompleto === form.nombre);
+  
+    // Si encontramos al empleado seleccionado, realizamos un PUT request a la API de Laravel.
+    if (selectedEmpleado) {
+      const url = `http://127.0.0.1:8000/api/asistencia-empleados/${selectedEmpleado.id}`;
+      
+      // Prepara el objeto con la nueva fechaHoraSalida, asegúrate de que esté en el formato correcto.
+      const updatedData = {
+        fechaHoraSalida: fechaHoraSalida, // por ejemplo, si quieres la fecha y hora actuales
+      };
+  
+      try {
+        const response = await fetch(url, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            // Si necesitas configurar tokens de autenticación u otros encabezados, hazlo aquí.
+          },
+          body: JSON.stringify(updatedData),
         });
-      } else {
-        console.error("No se encontró al empleado seleccionado.");
+  
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+  
+        // alert("Registro satisfactorio!");
+        setModalOpen(true);
+      } catch (error) {
+        console.error("Error updating document: ", error);
+        alert("Error: no está conectado o el servidor no responde adecuadamente.");
       }
-
-      // alert("Registro satisfactorio!");
-
-      setModalOpen(true);
-
-
-    } catch (error) {
-      console.error("Error adding document: ", error);
-      alert("Error: no esta conectado!");
+    } else {
+      console.error("No se encontró al empleado seleccionado.");
     }
   };
 
@@ -71,66 +78,67 @@ const SalidaPersonal = () => {
 
   useEffect(() => {
     const fetchCargos = async () => {
-      const cargosCollection = collection(db, "asistenciaEmpleados");
-      const cargosSnapshot = await getDocs(cargosCollection);
-      // Usando un Set para garantizar valores únicos
-      const cargosSet = new Set(cargosSnapshot.docs.map(doc => doc.data().cargo));
-
-      // Convertimos el Set a un array y lo establecemos en el estado.
-      setCargos([...cargosSet]);
-
-    }
-
+      try {
+        const response = await fetch('http://127.0.0.1:8000/api/asistencia-empleados');
+        if (!response.ok) throw new Error(response.statusText);
+  
+        const data = await response.json();
+        // Usando un Set para garantizar valores únicos
+        const cargosSet = new Set(data.map(item => item.cargo));
+  
+        // Convertimos el Set a un array y lo establecemos en el estado.
+        setCargos([...cargosSet]);
+      } catch (error) {
+        console.error('Error al cargar los cargos:', error);
+      }
+    };
+  
     fetchCargos();
   }, []);
 
-
   //Ver la fecha y hora
-  const [fechaHoraSalida, setFechaHoraSalida] = useState(getGTMMinus4Date());
+  const [fechaHoraSalida, setFechaHoraSalida] = useState(formatDateToDDMMAAHHMM(getGTMMinus4Date()));
 
 
-  //cargar nombres
-  const [nombres, setnombres] = useState([]);
+  const [nombres, setNombres] = useState([]);
 
   const handleCargoChange = async (e) => {
     handleChange(e); // Continua actualizando el estado del formulario.
-
+  
     const selectedCargo = e.target.value;
-    const nombresCollection = collection(db, "asistenciaEmpleados");
-
-    // Modificamos la consulta para obtener empleados sin fechaHoraSalida registrada.
-    const nombresQuery = query(
-      nombresCollection,
-      where("cargo", "==", selectedCargo),
-      where("fechaHoraSalida", "==", 'No registrado'),
-    );
-
-    const nombresSnapshot = await getDocs(nombresQuery);
-
-    const nombresList = nombresSnapshot.docs.map(doc =>
-    ({
-      nombreCompleto: `${doc.data().nombre}`,
-      fechaHoraIngreso: doc.data().fechaHoraIngreso,
-      id: doc.id
-    }));
-
-    setnombres(nombresList);
+    try {
+      const response = await fetch('http://127.0.0.1:8000/api/asistencia-empleados');
+      if (!response.ok) throw new Error(response.statusText);
+  
+      const data = await response.json();
+      // Filtramos los empleados por el cargo seleccionado y que no tienen fechaHoraSalida
+      const nombresList = data
+        .filter(item => item.cargo === selectedCargo && item.fechaHoraSalida === '-')
+        .map(item => ({
+          nombreCompleto: item.nombre,
+          fechaHoraIngreso: item.fechaHoraIngreso,
+          id: item.id
+        }));
+  
+      setNombres(nombresList);
+    } catch (error) {
+      console.error('Error al cargar los nombres:', error);
+    }
   };
-
+  
   const handleNombreChange = (e) => {
     handleChange(e);
-
+  
     // Busca el empleado seleccionado por su nombre en nombresList
     const selectedEmpleado = nombres.find(emp => emp.nombreCompleto === e.target.value);
     if (selectedEmpleado) {
-      const formattedDate = firestoreDateToFormattedDate(selectedEmpleado.fechaHoraIngreso);
-
+      // Asumiendo que deseas mantener el formato de fecha como está en la respuesta
       setForm(prev => ({
         ...prev,
-        fechaHoraIngreso: formattedDate,
+        fechaHoraIngreso: selectedEmpleado.fechaHoraIngreso,
       }));
     } else {
-      console.error("No se encontró al empleado seleccionado."); // Esta línea podría ser la que lanza el error.
+      console.error("No se encontró al empleado seleccionado."); 
     }
   };
 
@@ -293,8 +301,8 @@ const SalidaPersonal = () => {
                 </span>
 
                 {/* Content */}
-                <h3 className="text-xl sm:text-2xl font-bold mb-4">Ingreso registrado con éxito</h3>
-                <p className="text-sm sm:text-base leading-relaxed text-gray-500">{fechaHoraIngreso.toLocaleString()}</p>
+                <h3 className="text-xl sm:text-2xl font-bold mb-4">Salida registrada con éxito</h3>
+             
 
                 {/* Buttons */}
                 <div className="mt-8 flex justify-center items-center space-x-3">
@@ -338,6 +346,17 @@ function getGTMMinus4Date() {
   now.setMinutes(now.getMinutes() + timezoneOffset - desiredOffset);
 
   return now; // Retorna el objeto Date
+}
+
+// Función para formatear la fecha en el formato "DD/MM/AA HH:MM"
+function formatDateToDDMMAAHHMM(date) {
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Meses van de 0 a 11
+  const year = date.getFullYear().toString().substr(-2); // Solo los últimos dos dígitos
+  const hours = date.getHours().toString().padStart(2, '0');
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+
+  return `${day}/${month}/${year} ${hours}:${minutes}`;
 }
 
 export default SalidaPersonal

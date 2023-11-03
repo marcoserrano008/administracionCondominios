@@ -51,18 +51,23 @@ import VerPagos from './components/vistas/servicios/VerPagos';
 import Usuarios from './components/vistas/usuarios/Usuarios';
 import RegistrarUsuario from './components/vistas/usuarios/RegistrarUsuario';
 import Header from './components/reusables/Header';
+
+import Nav from './components/Nav';
+import ProtectedRoutes from './components/ProtectedRoutes';
+
 function App() {
   return (
 
-      
-      <BrowserRouter>
-        <AuthProvider>
-          <Header/>
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/" element={<Landing />} />
-            <Route path="/signup" element={<SignUp />} />
-            <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+
+    <BrowserRouter>
+      <AuthProvider>
+        <Header />
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<Landing />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+          <Route element={<ProtectedRoutes />}>
             <Route path='/servicios' element={<Servicios />} />
             <Route path='/condominio' element={<Condominio />} />
             <Route path='/personal' element={<Personal />} />
@@ -94,13 +99,16 @@ function App() {
             <Route path='/registrarServicio' element={<RegistrarServicio />} />
             <Route path='/registrarPropietario' element={<RegistrarResidente />} />
             <Route path='/gestorAnuncios' element={<GestorAnuncios />} />
-            <Route path='/verPagos' element={<VerPagos/>} />
-            <Route path='/usuarios' element={<Usuarios/>} />
-            <Route path='/registrarUsuario' element={<RegistrarUsuario/>} />
-          </Routes>
-        </AuthProvider>
-      </BrowserRouter>
-    
+            <Route path='/verPagos' element={<VerPagos />} />
+            <Route path='/usuarios' element={<Usuarios />} />
+            <Route path='/registrarUsuario' element={<RegistrarUsuario />} />
+          </Route>
+
+
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>
+
   );
 }
 

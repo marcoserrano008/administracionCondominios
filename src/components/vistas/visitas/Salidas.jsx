@@ -34,24 +34,33 @@ const Salidas = () => {
   //Verificar los datos
   const handleVerification = async () => {
     try {
-      const ingresoQuery = query(collection(db, "ingresos"), where("idIngreso", "==", form.idIngreso));
-      const querySnapshot = await getDocs(ingresoQuery);
-      console.log(querySnapshot.docs[0])
-
-      if (!querySnapshot.empty) {
+      // Realiza la solicitud GET a la API de Laravel para obtener todos los ingresos.
+      const apiUrl = `http://127.0.0.1:8000/api/ingresos`;
+      const response = await fetch(apiUrl);
+  
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+  
+      // Extrae el JSON de la respuesta.
+      const ingresos = await response.json();
+  
+      // Encuentra el ingreso que coincide con el 'idIngreso' proporcionado en el formulario.
+      const ingresoEncontrado = ingresos.find(ing => ing.idIngreso === form.idIngreso);
+  
+      if (ingresoEncontrado) {
         setIsVerified(true);
-        const doc = querySnapshot.docs[0];
-        const docData = doc.data();
-
-        console.log(doc.id); // Ahora es correcto
-        setDocId(doc.id); // Guardas el ID del documento
+  
+        console.log(ingresoEncontrado.id); // El ID del registro en Laravel.
+        setDocId(ingresoEncontrado.id); // Guarda el ID del registro de Laravel.
+  
         setForm({
           ...form,
-          edificio: docData.edificio,
-          nombreCompleto: docData.nombreCompleto,
-          numeroDepartamento: docData.numeroDepartamento,
-          fechaHoraIngreso: docData.fechaHoraIngreso.toDate().toLocaleString() // Aquí estoy convirtiendo el Timestamp de Firebase a una cadena legible.
-          // Puedes añadir más campos aquí si lo necesitas
+          edificio: ingresoEncontrado.edificio,
+          nombreCompleto: ingresoEncontrado.nombreCompleto,
+          numeroDepartamento: ingresoEncontrado.numeroDepartamento,
+          fechaHoraIngreso: ingresoEncontrado.fechaHoraIngreso // La fecha ya está en formato de cadena.
+          // Añade más campos aquí si lo necesitas.
         });
       } else {
         console.log("No such document!");
@@ -67,19 +76,39 @@ const Salidas = () => {
 
   const handleOnSubmit = async (event) => {
     event.preventDefault();
-
+  
     if (!docId) {
       alert("Primero verifica el Código de Ingreso.");
       return;
     }
-
+  
+    // Construye el objeto de datos que se enviará en la solicitud PUT.
+    const dataToUpdate = {
+      registroSalida: "Sí",
+      fechaHoraSalida: fechaHoraSalida, // Asegúrate de que esta variable tiene el valor correcto.
+    };
+  
     try {
-      const ingresoRef = doc(db, "ingresos", docId);
-      await updateDoc(ingresoRef, {
-        registroSalida: "si",
-        fechaHoraSalida: fechaHoraSalida
+      const apiUrl = `http://127.0.0.1:8000/api/ingresos/${docId}`;
+      const response = await fetch(apiUrl, {
+        method: 'PUT', // Método HTTP de solicitud PUT.
+        headers: {
+          'Content-Type': 'application/json',
+          // Incluir otros encabezados si es necesario, como tokens de autenticación.
+        },
+        body: JSON.stringify(dataToUpdate), // Convierte los datos a una cadena JSON.
       });
-      setModalOpen(true)
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  
+      // Aquí puedes manejar la respuesta de la solicitud PUT.
+      const result = await response.json();
+      console.log(result); // Ver la respuesta del servidor.
+      
+      setModalOpen(true); // Abre el modal si todo va bien.
+  
     } catch (error) {
       console.error("Error updating document: ", error);
     }

@@ -31,23 +31,35 @@ import { Delete, Edit } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 
 const fetchPersonal = async () => {
-    const db = getFirestore(app);
-    const personalCol = collection(db, "personal");
-    const personalnapshot = await getDocs(personalCol);
-    return personalnapshot.docs.map(doc => {
-        const data = doc.data();
-        return {
-            nombre: data.nombre,
-            apellidoPaterno: data.apellidoPaterno,
-            apellidoMaterno: data.apellidoMaterno,
-            cargo: data.cargo,
-            horaIngreso: data.horaIngreso,
-            horaSalida: data.horaSalida,
-            diasSemana: data.diasSemana,
-            contacto: data.contacto,
-            id: doc.id
-        };
-    });
+    try {
+        // Realizamos la solicitud GET a la API de Laravel
+        const response = await fetch('http://127.0.0.1:8000/api/personal');
+
+        if (!response.ok) {
+            // Si la respuesta no es 2xx, lanzamos un error
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const personal = await response.json();
+
+        // Mapeamos los datos recibidos al formato deseado
+        return personal.map(persona => ({
+            nombre: persona.nombre,
+            apellidoPaterno: persona.apellidoPaterno,
+            apellidoMaterno: persona.apellidoMaterno,
+            cargo: persona.cargo,
+            horaIngreso: persona.horaIngreso,
+            horaSalida: persona.horaSalida,
+            diasSemana: persona.diasSemana,
+            contacto: persona.contacto,
+            id: persona.id
+        }));
+
+    } catch (error) {
+        console.error("Error al obtener el personal: ", error);
+        // Manejar el error como prefieras, por ejemplo, podrías devolver un arreglo vacío o re-lanzar el error
+        throw error;
+    }
 };
 
 const TablaPersonal = () => {
@@ -75,21 +87,37 @@ const TablaPersonal = () => {
 
     //Editar los datos
 
-    const updatePersonal = async (id, updatedBuilding) => {
-        const db = getFirestore(app);
-        const personalDoc = doc(db, "personal", id);
-        await updateDoc(personalDoc, updatedBuilding);
+    const updatePersonal = async (id, updatedData) => {
+        try {
+            const response = await fetch(`http://127.0.0.1:8000/api/personal/${id}`, {
+                method: 'PUT', // Indica el método PUT para la actualización
+                headers: {
+                    'Content-Type': 'application/json',
+                    // Aquí deberías agregar cualquier encabezado adicional necesario, como tokens de autorización
+                },
+                body: JSON.stringify(updatedData) // Convierte los datos actualizados en una cadena JSON
+            });
+    
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+    
+            return await response.json(); // Devuelve la respuesta parseada como JSON
+    
+        } catch (error) {
+            console.error("Error updating personal: ", error);
+            throw error; // Re-lanza el error para manejarlo en otra parte del código
+        }
     };
 
     
 
     const handleSaveRowEdits = async ({ exitEditingMode, row, values }) => {
         if (!Object.keys(validationErrors).length) {
-            await updatePersonal(row.original.id, values);
-            tableData[row.index] = values;
-            //send/receive api updates here, then refetch or update local table data for re-render
+            const updatedRow = await updatePersonal(row.original.id, values);
+            tableData[row.index] = updatedRow;
             setTableData([...tableData]);
-            exitEditingMode(); //required to exit editing mode and close modal
+            exitEditingMode();
         }
     };
 
@@ -101,24 +129,37 @@ const TablaPersonal = () => {
     //Eliminar datos
 
     const deletePersonal = async (id) => {
-        const db = getFirestore(app);
-        const personalDoc = doc(db, "personal", id);
-        await deleteDoc(personalDoc);
+        try {
+            const response = await fetch(`http://127.0.0.1:8000/api/personal/${id}`, {
+                method: 'DELETE', // Indica el método DELETE para la eliminación
+                headers: {
+                    // Aquí deberías agregar cualquier encabezado adicional necesario, como tokens de autorización
+                }
+            });
+    
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+    
+            return response.status; // Devuelve el estado de la respuesta para confirmar la eliminación
+    
+        } catch (error) {
+            console.error("Error deleting personal: ", error);
+            throw error;
+        }
     };
-
 
     const handleDeleteRow = useCallback(
         async (row) => {
-            if (!confirm(`Are you sure you want to delete ${row.getValue('edificio')}`)) {
+            if (!confirm(`Confirmar para eliminar`)) {
                 return;
             }
             await deletePersonal(row.original.id);
             tableData.splice(row.index, 1);
             setTableData([...tableData]);
         },
-        [tableData],
+        [tableData]
     );
-
     
     const createHeaders = (keys) => {
         const result = []

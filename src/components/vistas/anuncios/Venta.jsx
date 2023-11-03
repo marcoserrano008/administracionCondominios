@@ -35,29 +35,50 @@ const Venta = () => {
   const [edificios, setEdificios] = useState([]);
 
   useEffect(() => {
-    const fetchEdificios = async () => {
-      const edificiosCollection = collection(db, "edificios");
-      const edificiosSnapshot = await getDocs(edificiosCollection);
-      const edificiosList = edificiosSnapshot.docs.map(doc => doc.data().nombre_edificio);
-      setEdificios(edificiosList);
-    }
+    const fetchEdificiosYDepartamentos = async () => {
+      try {
+        const response = await fetch('http://127.0.0.1:8000/api/edificios-departamentos');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        setEdificios(data);
+      } catch (error) {
+        console.error("Error fetching data: ", error);
+      }
+    };
 
-    fetchEdificios();
+    fetchEdificiosYDepartamentos();
   }, []);
 
   //cargar departamentos
   const [departamentos, setDepartamentos] = useState([]);
 
   const handleEdificioChange = async (e) => {
-    handleChange(e); // Continua actualizando el estado del formulario.
-
+    handleChange(e); // Continúa actualizando el estado del formulario.
+  
     const selectedEdificio = e.target.value;
-    const departamentosCollection = collection(db, "departamentos");
-    const departamentosQuery = query(departamentosCollection, where("edificio", "==", selectedEdificio));
-    const departamentosSnapshot = await getDocs(departamentosQuery);
-    const departamentosList = departamentosSnapshot.docs.map(doc => doc.data().numeroDepartamento);
+    const edificioData = edificios.find(edificio => edificio.nombre_edificio === selectedEdificio);
+  
+    // Suponemos que departamentos es un array de strings con los nombres de los departamentos.
+    let departamentosList = edificioData?.departamentos?.split(',') || [];
     setDepartamentos(departamentosList);
+  
+    // Establece el primer departamento en el estado del formulario si existe algún departamento.
+    if (departamentosList.length > 0) {
+      setForm(prevForm => ({
+        ...prevForm,
+        numeroDepartamento: departamentosList[0]
+      }));
+    } else {
+      // Si no hay departamentos, se puede establecer un valor predeterminado o dejarlo vacío
+      setForm(prevForm => ({
+        ...prevForm,
+        numeroDepartamento: "No asignado" // o "No asignado", dependiendo de lo que necesites
+      }));
+    }
   };
+
 
   //Manejar la imagen
   const [imageFile, setImageFile] = useState(null);
@@ -70,63 +91,56 @@ const Venta = () => {
   const storage = getStorage();
   const handleOnSubmit = async (event) => {
     event.preventDefault();
+  
     if (!form.edificio) {
       setErrorMessage("Por favor, seleccione un edificio para poder publicar.");
       return;
     }
+  
     setIsSubmitting(true);
     const formData = new FormData(event.target);
-
+  
+    // Añadir la imagen al objeto FormData si existe
+    if (imageFile) {
+      formData.append('imagenReferencia', imageFile);
+    }
+  
+    // Incluir otros campos del formulario
+    formData.append('edificio', form.edificio);
+    formData.append('numeroDepartamento', form.numeroDepartamento || 'No asignado'); // Ejemplo de uso de valor por defecto
+    formData.append('tipo', form.tipo);
+    formData.append('precio', form.precio);
+    formData.append('contacto1', form.contacto1);
+    formData.append('contacto2', form.contacto2);
+    formData.append('descripcion', form.descripcion);
+    formData.append('fechaHoraPublicacion', new Date().toISOString()); // o el valor de 'fechaHoraPublicacion' que tienes
+  
     try {
-      // 1. Subir imagen a Firebase Storage
-      if (imageFile) {
-        const storageRef = ref(storage, 'imagenes/' + imageFile.name);
-        const uploadTask = uploadBytesResumable(storageRef, imageFile);
-
-        uploadTask.on('state_changed',
-          (snapshot) => {
-            // Progreso del envío...
-          },
-          (error) => {
-            console.error("Error al subir archivo: ", error);
-          },
-          async () => {
-            // Cuando se completa el envío, obten el enlace de descarga
-            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-
-            // 2. Guardar datos en Firestore con la URL de la imagen
-            const docRef = await addDoc(collection(db, "anuncios"), {
-              // ... otros campos del formulario
-              imagenReferencia: downloadURL,
-              edificio: formData.get('edificio'),
-              numeroDepartamento: formData.get('numeroDepartamento'),
-              tipo: formData.get('tipo'),
-              precio: formData.get('precio'),
-              contacto1: formData.get('contacto1'),
-              contacto2: formData.get('contacto2'),
-              descripcion: formData.get('descripcion'),
-              fechaHoraPublicacion: fechaHoraPublicacion,
-            });
-
-            console.log("Documento escrito con ID: ", docRef.id);
-            alert("Registro satisfactorio!");
-            navigate('/condominio');
-          }
-        );
-      } else {
-        const docRef = await addDoc(collection(db, "anuncios"), {
-          // ... otros campos del formulario sin la imagen
-        });
-
-
+      // Realizar la solicitud POST a la API de Laravel
+      const response = await fetch('http://127.0.0.1:8000/api/anuncios', {
+        method: 'POST',
+        body: formData, // FormData se enviará con el tipo de contenido 'multipart/form-data'
+        // Aquí no se establece 'Content-Type' manualmente porque 'fetch' lo hace automáticamente con FormData
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+  
+      const result = await response.json(); // Suponiendo que la API devuelve un JSON
+      console.log("Anuncio publicado con éxito, ID:", result.id); // Suponiendo que la API devuelve un objeto con un 'id'
+      alert("Registro satisfactorio!");
+      // Asumiendo que tienes una función 'navigate' para redirigir al usuario
+      navigate('/condominio');
       setModalOpen(true);
     } catch (error) {
-      console.error("Error al agregar documento: ", error);
+      console.error("Error al agregar anuncio: ", error);
       alert("Error: no está conectado!");
+    } finally {
+      setIsSubmitting(false);
     }
-    setIsSubmitting(false);
   };
+  
 
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -191,10 +205,10 @@ const Venta = () => {
                       onChange={handleEdificioChange}
                       className="py-3 px-4 pr-9 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400"
                     >
-                      <option value="" disabled={form.edificio !== ""}>Seleccione un edificio...</option>
-                      {edificios.map(edificio => (
-                        <option key={edificio} value={edificio}>
-                          {edificio}
+                    <option value="" disabled={form.edificio !== ""}>Seleccione un edificio...</option>
+                    {edificios.map((edificioObj) => (
+                        <option key={edificioObj.nombre_edificio} value={edificioObj.nombre_edificio}>
+                          {edificioObj.nombre_edificio}
                         </option>
                       ))}
                     </select>
@@ -210,9 +224,9 @@ const Venta = () => {
                       onChange={handleChange}
                       className="py-3 px-4 pr-9 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400"
                     >
-                      {departamentos.map(depto => (
-                        <option key={depto} value={depto}>
-                          {depto}
+                      {departamentos.map((depto, index) => (
+                        <option key={index} value={depto}>
+                          {depto === "No asignado" ? "No asignado" : depto}
                         </option>
                       ))}
                     </select>
@@ -227,7 +241,7 @@ const Venta = () => {
                     <input type="number" name="contacto1"
                       required
                       aria-describedby="Complete el campo"
-                      id="contacto1" value={form.nombre_edificio} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
+                      id="contacto1" value={form.contacto1} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
                   </div>
 
                   <div>
@@ -235,7 +249,7 @@ const Venta = () => {
                     <input type="number" name="contacto2"
                       required
                       aria-describedby="Complete el campo"
-                      id="contacto2" value={form.cantidad_pisos} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
+                      id="contacto2" value={form.contacto2} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
                   </div>
                 </div>
                 {/* <!-- End Grid --> */}
@@ -246,7 +260,7 @@ const Venta = () => {
                   <input type="text" name="descripcion"
                     required
                     aria-describedby="Complete el campo"
-                    id="descripcion" value={form.direccion} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
+                    id="descripcion" value={form.descripcion} onChange={handleChange} className="py-3 px-4 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" />
                 </div>
 
 

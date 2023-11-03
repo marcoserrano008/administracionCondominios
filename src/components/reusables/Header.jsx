@@ -8,6 +8,9 @@ import { signOut } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { doc, getDoc } from "firebase/firestore";
 import { db, app } from '../../firebase';
+import axios from 'axios';
+import storage from '../../storage/storage';
+import { isAuthenticated, getUserRole } from '../../AuthHelpers';
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -55,6 +58,35 @@ const Header = () => {
     }
   };
 
+  //version local
+  function logout() {
+    // Obtén el token almacenado
+    const token = localStorage.getItem('token');
+    console.log(localStorage) 
+    // Configura los headers para la solicitud  
+    const config = {
+      headers: { Authorization: `Bearer ${token}` }
+    };
+  
+    // Llama a la API para cerrar la sesión
+    axios.post('http://127.0.0.1:8000/api/logout', {}, config)
+      .then(response => {
+        // Si la respuesta es exitosa, elimina el token del almacenamiento local
+        localStorage.removeItem('token');
+        localStorage.removeItem('rol'); // Si también guardas el rol
+  
+        // Redirecciona al usuario a la página de inicio o de inicio de sesión
+        navigate('/login')
+      })
+      .catch(error => {
+        console.error('Hubo un error al cerrar la sesión', error);
+        localStorage.removeItem('token');
+        localStorage.removeItem('rol');
+        navigate('/login')
+      });
+  }
+
+
 
   return (
     <>
@@ -66,7 +98,7 @@ const Header = () => {
               <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">Sistema</span>
             </Link>
             <div className="flex items-center lg:order-2">
-              {!user && (
+              {!isAuthenticated() && (
                 <>
                   <Link to={'/login'} className="text-gray-800 dark:text-white hover:bg-gray-50 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800">
                     Iniciar Sesión
@@ -77,9 +109,9 @@ const Header = () => {
                 </>
               )}
 
-              {user && (
+              {isAuthenticated()&& (
                 <>
-                  <button onClick={handleLogout} className="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
+                  <button onClick={logout} className="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
                     Cerrar Sesion
                   </button>
                 </>
@@ -112,7 +144,8 @@ const Header = () => {
             <div className={`${menuOpen ? '' : 'hidden'} justify-between items-center w-full lg:flex lg:w-auto lg:order-1`} id="mobile-menu-2">
 
               <ul className="flex flex-col mt-4 font-medium lg:flex-row lg:space-x-8 lg:mt-0">
-                {user && userRole === 'administrador' && (
+                {/* {user && userRole === 'administrador' && ( */}
+                {isAuthenticated() && localStorage.rol === 'administrador' && (
                   <>
 
                     <li>
@@ -143,7 +176,7 @@ const Header = () => {
                       </Link>
                     </li>
                     <li>
-                      <Link to='/visitas' 
+                      <Link to='/visitas'
                         className={`block py-2 pr-4 pl-3 ${activeLink === 'visitas' ? 'text-primary-700' : 'text-gray-700 border-b border-gray-100 hover:bg-gray-50'} text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700"`}
                         onClick={() => handleSetActiveLink('visitas')}
                       >
@@ -151,7 +184,7 @@ const Header = () => {
                       </Link>
                     </li>
                     <li>
-                      <Link to='/anuncios' 
+                      <Link to='/anuncios'
                         className={`block py-2 pr-4 pl-3 ${activeLink === 'anuncios' ? 'text-primary-700' : 'text-gray-700 border-b border-gray-100 hover:bg-gray-50'} text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700"`}
                         onClick={() => handleSetActiveLink('anuncios')}
                       >
@@ -172,10 +205,10 @@ const Header = () => {
 
                 )}
 
-                {user && userRole === 'guardia' && (
+                {isAuthenticated() && localStorage.rol === 'guardia' && (
                   <>
 
-<li>
+                    <li>
                       <Link to="/servicios"
                         className={`block py-2 pr-4 pl-3 ${activeLink === 'servicios' ? 'text-primary-700' : 'text-gray-700 border-b border-gray-100 hover:bg-gray-50'} text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700"`}
                         onClick={() => handleSetActiveLink('servicios')}
@@ -184,8 +217,8 @@ const Header = () => {
                       </Link>
                     </li>
 
-                   <li>
-                      <Link to='/visitas' 
+                    <li>
+                      <Link to='/visitas'
                         className={`block py-2 pr-4 pl-3 ${activeLink === 'visitas' ? 'text-primary-700' : 'text-gray-700 border-b border-gray-100 hover:bg-gray-50'} text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700"`}
                         onClick={() => handleSetActiveLink('visitas')}
                       >
@@ -193,7 +226,7 @@ const Header = () => {
                       </Link>
                     </li>
                     <li>
-                      <Link to='/anuncios' 
+                      <Link to='/anuncios'
                         className={`block py-2 pr-4 pl-3 ${activeLink === 'anuncios' ? 'text-primary-700' : 'text-gray-700 border-b border-gray-100 hover:bg-gray-50'} text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700"`}
                         onClick={() => handleSetActiveLink('anuncios')}
                       >
@@ -204,10 +237,10 @@ const Header = () => {
 
                 )}
 
-                {user && userRole === 'usuario' && (
+                {isAuthenticated() && localStorage.rol === 'usuario' && (
                   <>
                     <li>
-                      <Link to='/anuncios' 
+                      <Link to='/anuncios'
                         className={`block py-2 pr-4 pl-3 ${activeLink === 'anuncios' ? 'text-primary-700' : 'text-gray-700 border-b border-gray-100 hover:bg-gray-50'} text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700"`}
                         onClick={() => handleSetActiveLink('anuncios')}
                       >

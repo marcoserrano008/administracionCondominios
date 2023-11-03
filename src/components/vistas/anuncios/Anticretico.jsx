@@ -8,17 +8,30 @@ const Anticretico = () => {
   const [anuncios, setAnuncios] = useState([]);
 
   useEffect(() => {
-    // Referencia a la colección 'anuncios'
-    const anunciosRef = collection(db, 'anuncios');
-
-
-    getDocs(anunciosRef).then((querySnapshot) => {
-      const data = [];
-      querySnapshot.forEach((doc) => {
-        data.push(doc.data());
-      });
-      setAnuncios(data);
-    });
+    const fetchAnuncios = async () => {
+      try {
+        const response = await fetch('http://127.0.0.1:8000/api/anuncios');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+  
+        // Actualizar la URL de la imagen a la estructura deseada si es necesario
+        const updatedData = data.map(anuncio => ({
+          ...anuncio,
+          // Comprobar si imagenReferencia es no nulo y actualizar la URL en consecuencia
+          imagenReferencia: anuncio.imagenReferencia 
+            ? `http://localhost:8000/storage/anuncios/${anuncio.imagenReferencia.split('/').pop()}` 
+            : null, // o podrías tener una imagen por defecto aquí
+        }));
+  
+        setAnuncios(updatedData);
+      } catch (error) {
+        console.error("Error al cargar anuncios: ", error);
+      }
+    };
+  
+    fetchAnuncios();
   }, []);
 
 

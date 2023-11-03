@@ -1,50 +1,108 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { Link } from 'react-router-dom';
 import { Button } from '../ui/button';
-import axios from 'axios';
+import Header from '../reusables/Header';
 import Footer from '../reusables/Footer';
+// Asegúrate de importar la configuración de firebase
 
+import axios from 'axios';
+import { sendRequest } from '../../functions';
+import storage from '../../storage/storage';
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
 
-  const login = async (event) => {
-    event.preventDefault();
-    setIsSubmitting(true);
-    setErrorMessage('');
+
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    rememberMe: false
+  });
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData(prevState => ({
+      ...prevState,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  }
+
+  const handleSubmit2 = async (e) => {
+    e.preventDefault();
+    const authInstance = getAuth();
     try {
-      // Hacemos la solicitud POST a nuestra API
-      const response = await axios.post('http://127.0.0.1:8000/api/login', {
-        email,
-        password,
-      });
-
-      // Guardamos el token y el rol en el localStorage o en un contexto de autenticación
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('rol', response.data.rol);
-      
-      // Redireccionamos al usuario a la página que desees después del login
-      console.log('se ha logueado')
+      await signInWithEmailAndPassword(authInstance, email, password);
       navigate('/');
-
-      setIsSubmitting(false);
     } catch (error) {
-      setIsSubmitting(false);
-      if (error.response) {
-        // La respuesta de la API está indicando que hubo un error
-        setErrorMessage(error.response.data.message || 'Error al iniciar sesión');
+      console.error("Error al iniciar sesión:", error);
+      setErrorMessage("Cuenta no valida.");
+    }
+    setIsSubmitting(false);
+  }
+
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
+    const loginData = {
+      email: email,
+      password: password,
+    };
+
+    try {
+      const response = await axios.post('http://localhost:8000/api/login', loginData);
+
+      if (response.status === 200) {
+        const data = response.data;
+        // Guarda el token en una cookie o en el almacenamiento local, si es necesario.
+        navigate('/');
       } else {
-        setErrorMessage('Error al conectarse con el servidor');
+        console.log('Error de inicio de sesión');
       }
+    } catch (error) {
+      console.error('Error:', error);
     }
   };
 
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+
+//Local version
+
+  // const csrf = async () => {
+  //   await axios.get('/sanctum/csrf-cookie');
+
+  // }
+  const csrf = async () => {
+    try {
+      const response = await sendRequest('GET', null, 'sanctum/csrf-cookie', '', false);
+      // La solicitud GET a /sanctum/csrf-cookie establecerá la cookie CSRF en el navegador.
+      // No es necesario analizar la respuesta.
+    } catch (error) {
+      console.error("Error al obtener el token CSRF", error);
+    }
+  }
+
+  const login = async (e) => {
+    e.preventDefault();
+    await csrf();
+    const form = {email:email, password:password};
+    // const res = await sendRequest('POST', form, '/api/auth/login','',false);
+    const res = await sendRequest('POST', form, '/api/auth/login', {
+      'X-XSRF-TOKEN': window.axios.defaults.headers.common['XSRF-TOKEN']
+    }, false);
+    if(res.status == true){
+      storage.set('authToken', res.token);
+      storage.set('authUser', res.data);
+      navigate('/');
+    }
+  }
 
   return (
 

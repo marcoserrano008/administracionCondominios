@@ -6,6 +6,8 @@ import { Link } from 'react-router-dom';
 import { Button } from '../ui/button';
 import Header from '../reusables/Header';
 import Footer from '../reusables/Footer';
+import { sendRequest } from '../../functions';
+import axios from 'axios';
 
 function SignUp() {
   const [email, setEmail] = useState('');
@@ -15,7 +17,7 @@ function SignUp() {
   const [nombre, setNombre] = useState('');
   const [apellidoPaterno, setApellidoPaterno] = useState('');
   const [apellidoMaterno, setApellidoMaterno] = useState('');
-
+  const rol = 'usuario';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -73,6 +75,77 @@ function SignUp() {
 
   const [errorMessage, setErrorMessage] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+//local version
+
+const csrf = async () => {
+  await axios.get('/sanctum/csrf-cookie');
+}
+
+const register = async (e) => {
+  e.preventDefault();
+  await csrf();
+  const form = {
+    nombre: nombre,
+    apellido_paterno: apellidoPaterno,
+    apellido_materno: apellidoMaterno,
+    rol: rol,
+    email:email, 
+    password:password};
+  const res = await sendRequest('POST', form, '/api/auth/register','',false);
+  if(res.status == true){
+    storage.set('authToken', res.token);
+    storage.set('authUser', res.data);
+    navigate('/login');
+  }
+}
+
+const handleRegister = async (e) => {
+  e.preventDefault();
+  if (password.length < 8) {
+    setErrorMessage('La contraseña debe tener al menos 8 caracteres.');
+    return;
+  }
+
+  // Validación para solo letras y longitud máxima:
+  const lettersOnlyRegex = /^[a-zA-ZñÑáéíóúÁÉÍÓÚ\s]+$/;
+
+  if (!lettersOnlyRegex.test(nombre) || nombre.length > 50) {
+    setErrorMessage('El nombre debe contener solo letras y tener un máximo de 50 caracteres.');
+    return;
+  }
+
+  if (!lettersOnlyRegex.test(apellidoPaterno) || apellidoPaterno.length > 30) {
+    setErrorMessage('El apellido paterno debe contener solo letras y tener un máximo de 30 caracteres.');
+    return;
+  }
+
+  if (!lettersOnlyRegex.test(apellidoMaterno) || apellidoMaterno.length > 30) {
+    setErrorMessage('El apellido materno debe contener solo letras y tener un máximo de 30 caracteres.');
+    return;
+  }
+  if (password !== confirmPassword) {
+    setErrorMessage('Las contraseñas no coinciden.');
+    return;
+  }
+
+  try {
+    const inputs = {
+      email: email,
+      password: password,
+      name: nombre,
+      apellidoPaterno: apellidoPaterno,
+      apellidoMaterno: apellidoMaterno,
+      rol: rol, 
+    }
+    const response = await axios.post('http://127.0.0.1:8000/api/register', inputs);
+    console.log(response.data);
+    navigate('/login');
+    // Aquí puedes manejar la redirección o actualización de estado post-registro.
+  } catch (error) {
+    console.error(error.response.data);
+  }
+};
+
 
   return (
     <>
@@ -85,7 +158,7 @@ function SignUp() {
                 <h1 className="block text-2xl font-bold text-gray-800 dark:text-white">Registrarse</h1>
                 <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
 
-                  <form onSubmit={handleSubmit}>
+                  <form onSubmit={handleRegister}>
 
                     <div className="grid gap-y-4 mt-2">
                       <div>

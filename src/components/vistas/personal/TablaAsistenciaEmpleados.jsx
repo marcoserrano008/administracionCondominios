@@ -31,27 +31,36 @@ import { Delete, Edit } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 
 const fetchBuildings = async () => {
-    const db = getFirestore(app);
-    const edificiosCol = collection(db, "asistenciaEmpleados");
-    const edificioSnapshot = await getDocs(edificiosCol);
-    return edificioSnapshot.docs.map(doc => {
-        const data = doc.data();
-
-        const dateIngreso = data.fechaHoraIngreso && data.fechaHoraIngreso.toDate ? data.fechaHoraIngreso.toDate() : null;
-        const formattedDateIngreso = dateIngreso ? dateIngreso.toLocaleDateString() + ' ' + dateIngreso.toLocaleTimeString() : 'No registrado';
-
-        const dateSalida = data.fechaHoraSalida && data.fechaHoraSalida.toDate ? data.fechaHoraSalida.toDate() : null;
-        const formattedDateSalida = dateSalida ? dateSalida.toLocaleDateString() + ' ' + dateSalida.toLocaleTimeString() : 'No registrado';
-
+    const url = "http://127.0.0.1:8000/api/asistencia-empleados";
+  
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const empleados = await response.json();
+  
+      return empleados.map(emp => {
+        // Formatea las fechas para que coincidan con tu formato deseado.
+        const dateIngreso = emp.fechaHoraIngreso ? new Date(emp.fechaHoraIngreso) : null;
+        const formattedDateIngreso = dateIngreso ? `${dateIngreso.toLocaleDateString()} ${dateIngreso.toLocaleTimeString()}` : 'No registrado';
+  
+        const dateSalida = emp.fechaHoraSalida && emp.fechaHoraSalida !== '-' ? new Date(emp.fechaHoraSalida) : null;
+        const formattedDateSalida = dateSalida ? `${dateSalida.toLocaleDateString()} ${dateSalida.toLocaleTimeString()}` : 'No registrado';
+  
         return {
-            nombre: data.nombre,
-            cargo: data.cargo,
-            fechaHoraIngreso: formattedDateIngreso,
-            fechaHoraSalida: formattedDateSalida,
-            id: doc.id
+          nombre: emp.nombre,
+          cargo: emp.cargo,
+          fechaHoraIngreso: formattedDateIngreso,
+          fechaHoraSalida: formattedDateSalida,
+          id: emp.id
         };
-    });
-};
+      });
+  
+    } catch (error) {
+      console.error("Error fetching buildings: ", error);
+    }
+  };
 
 
 
@@ -103,26 +112,42 @@ const TablaAsistenciaEmpleados = () => {
     };
 
 
-    //Eliminar datos
-
-    const deletePropietario = async (id) => {
-        const db = getFirestore(app);
-        const edificioDoc = doc(db, "asistenciaEmpleados", id);
-        await deleteDoc(edificioDoc);
-    };
-
-
-    const handleDeleteRow = useCallback(
-        async (row) => {
-            if (!confirm(`Are you sure you want to delete ${row.getValue('edificio')}`)) {
-                return;
-            }
-            await deletePropietario(row.original.id);
-            tableData.splice(row.index, 1);
-            setTableData([...tableData]);
+//Eliminar datos
+const deletePropietario = async (id) => {
+    const url = `http://127.0.0.1:8000/api/asistencia-empleados/${id}`;
+  
+    try {
+      const response = await fetch(url, {
+        method: 'DELETE', // or 'PUT'
+        headers: {
+          'Content-Type': 'application/json',
+          // Incluye otros encabezados si es necesario, como tokens de autorización
         },
-        [tableData],
-    );
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      console.log("Deleted successfully");
+  
+    } catch (error) {
+      console.error("Error deleting document: ", error);
+    }
+  };
+  
+  const handleDeleteRow = useCallback(
+    async (row) => {
+      const edificio = row.getValue('edificio'); // Asegúrate de que 'edificio' es el campo correcto
+      if (!confirm(`Confirmar para eliminar`)) {
+        return;
+      }
+  
+      await deletePropietario(row.original.id);
+      // Actualiza el estado para reflejar los cambios en la UI
+      setTableData(prevTableData => prevTableData.filter(item => item.id !== row.original.id));
+    },
+    [setTableData], // Dependencias del hook useCallback
+  );
 
 
     const createHeaders = (keys) => {

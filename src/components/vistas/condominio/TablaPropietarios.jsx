@@ -31,23 +31,34 @@ import { data, states } from './makeData';
 import { Link } from 'react-router-dom';
 
 const fetchBuildings = async () => {
-    const db = getFirestore(app);
-    const edificiosCol = collection(db, "propietarios");
-    const edificioSnapshot = await getDocs(edificiosCol);
-    return edificioSnapshot.docs.map(doc => {
-        const data = doc.data();
-        return {
-            edificio: data.edificio,
-            numeroDepartamento: data.numeroDepartamento,
-            nombre: data.nombre,
-            apellidoPaterno: data.apellidoPaterno,
-            apellidoMaterno: data.apellidoMaterno,
-            contacto: data.contacto,
-            ci: data.ci,
-            id: doc.id
-        };
-    });
-};
+    try {
+      // Usar fetch para hacer una solicitud GET a tu endpoint de Laravel
+      const response = await fetch('http://127.0.0.1:8000/api/propietarios');
+      if (!response.ok) {
+        // Si la respuesta no es exitosa, lanza un error con el estado
+        throw new Error('Network response was not ok ' + response.statusText);
+      }
+      // Si la respuesta es exitosa, convertir a JSON
+      const propietarios = await response.json();
+  
+      // Mapear los resultados a la estructura que deseas
+      return propietarios.map((propietario) => ({
+        edificio: propietario.edificio,
+        numeroDepartamento: propietario.numeroDepartamento,
+        nombre: propietario.nombre,
+        apellidoPaterno: propietario.apellidoPaterno,
+        apellidoMaterno: propietario.apellidoMaterno,
+        contacto: propietario.contacto,
+        ci: propietario.ci,
+        id: propietario.id,
+      }));
+  
+    } catch (error) {
+      // Manejar errores aquí
+      console.error("Error al obtener propietarios:", error);
+    }
+  };
+
 
 
 const TablaPropietarios = () => {

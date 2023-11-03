@@ -17,42 +17,58 @@ const Ingresos = () => {
   const handleOnSubmit = async (event) => {
     event.preventDefault();
     setIsSubmitting(true);
+  
+    // Verifica que el formulario tiene todos los datos necesarios.
     if (!form.edificio) {
       setErrorMessage("Por favor, seleccione un edificio para poder registrar.");
+      setIsSubmitting(false);
       return;
     }
-
-
-    const formData = new FormData(event.target);
-
+  
+    // Construye el objeto de datos a enviar.
+    const submitData = {
+      edificio: form.edificio,
+      numeroDepartamento: form.numeroDepartamento,
+      tipoVisitante: form.tipoVisitante,
+      motivoVisita: form.motivoVisita,
+      nombreCompleto: form.nombreCompleto,
+      ci: form.ci,
+      placaVehiculo: form.placaVehiculo,
+      fechaHoraIngreso: fechaHoraIngreso,
+      registroSalida: 'no', // Asumiendo que 'no' indica que aún no ha salido.
+      idIngreso: generateIdIngreso(getGTMMinus4Date()),
+    };
+    console.log(submitData)
+  
     try {
-      const docRef = await addDoc(collection(db, "ingresos"), {
-        edificio: formData.get("edificio"),
-        numeroDepartamento: formData.get("numeroDepartamento"),
-        tipoVisitante: formData.get("tipoVisitante"),
-        motivoVisita: formData.get("motivoVisita"),
-        nombreCompleto: formData.get("nombreCompleto"),
-        ci: formData.get("ci"),
-        placaVehiculo: formData.get("placaVehiculo"),
-        fechaHoraIngreso: fechaHoraIngreso,
-        registroSalida: 'no',
-        tiempoMinutos: 0,
-        idIngreso: generateIdIngreso(fechaHoraIngreso),
+      const response = await fetch('http://127.0.0.1:8000/api/ingresos', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          // Aquí incluye cualquier otro encabezado que necesite tu API, como tokens de autenticación.
+        },
+        body: JSON.stringify(submitData),
       });
-      console.log("Document written with ID: ", docRef.id);
-      console.log(docRef.idIngreso)
-      setIdTicket(generateIdIngreso(fechaHoraIngreso))
-      // alert("Registro satisfactorio!");
-
+  
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+  
+      // Si necesitas el ID de respuesta, puedes obtenerlo así:
+      const result = await response.json();
+      console.log("Document written with ID: ", result.id); // Asumiendo que tu API devuelve un objeto con un 'id'.
+      setIdTicket(submitData.idIngreso);
+  
       setModalOpen(true);
-
-
+      // alert("Registro satisfactorio!");
+  
     } catch (error) {
       console.error("Error adding document: ", error);
-      alert("Error: no esta conectado!");
+      alert("Error: no se pudo conectar con la API.");
     }
     setIsSubmitting(false);
   };
+  
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -60,8 +76,8 @@ const Ingresos = () => {
   const [form, setForm] = useState({
     edificio: "",
     numeroDepartamento: "",
-    tipoVisitante: "",
-    motivoVisita: "",
+    tipoVisitante: "Residente",
+    motivoVisita: "Visita Social",
     nombreCompleto: "",
     ci: "",
     placaVehiculo: "",
@@ -84,33 +100,53 @@ const Ingresos = () => {
   const [edificios, setEdificios] = useState([]);
 
   useEffect(() => {
-    const fetchEdificios = async () => {
-      const edificiosCollection = collection(db, "edificios");
-      const edificiosSnapshot = await getDocs(edificiosCollection);
-      const edificiosList = edificiosSnapshot.docs.map(doc => doc.data().nombre_edificio);
-      setEdificios(edificiosList);
-    }
+    const fetchEdificiosYDepartamentos = async () => {
+      try {
+        const response = await fetch('http://127.0.0.1:8000/api/edificios-departamentos');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        setEdificios(data);
+      } catch (error) {
+        console.error("Error fetching data: ", error);
+      }
+    };
 
-    fetchEdificios();
+    fetchEdificiosYDepartamentos();
   }, []);
 
 
   //Ver la fecha y hora
-  const [fechaHoraIngreso, setFechaHoraIngreso] = useState(getGTMMinus4Date());
+  const [fechaHoraIngreso, setFechaHoraIngreso] = useState(formatDateToDDMMAAHHMM(getGTMMinus4Date()));
 
 
   //cargar departamentos
   const [departamentos, setDepartamentos] = useState([]);
 
   const handleEdificioChange = async (e) => {
-    handleChange(e); // Continua actualizando el estado del formulario.
-
+    handleChange(e); // Continúa actualizando el estado del formulario.
+  
     const selectedEdificio = e.target.value;
-    const departamentosCollection = collection(db, "departamentos");
-    const departamentosQuery = query(departamentosCollection, where("edificio", "==", selectedEdificio));
-    const departamentosSnapshot = await getDocs(departamentosQuery);
-    const departamentosList = departamentosSnapshot.docs.map(doc => doc.data().numeroDepartamento);
+    const edificioData = edificios.find(edificio => edificio.nombre_edificio === selectedEdificio);
+  
+    // Suponemos que departamentos es un array de strings con los nombres de los departamentos.
+    let departamentosList = edificioData?.departamentos?.split(',') || [];
     setDepartamentos(departamentosList);
+  
+    // Establece el primer departamento en el estado del formulario si existe algún departamento.
+    if (departamentosList.length > 0) {
+      setForm(prevForm => ({
+        ...prevForm,
+        numeroDepartamento: departamentosList[0]
+      }));
+    } else {
+      // Si no hay departamentos, se puede establecer un valor predeterminado o dejarlo vacío
+      setForm(prevForm => ({
+        ...prevForm,
+        numeroDepartamento: "No asignado" // o "No asignado", dependiendo de lo que necesites
+      }));
+    }
   };
 
 
@@ -170,11 +206,11 @@ const Ingresos = () => {
                     className="py-3 px-4 pr-9 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400"
                   >
                     <option value="" disabled={form.edificio !== ""}>Seleccione un edificio...</option>
-                    {edificios.map(edificio => (
-                      <option key={edificio} value={edificio}>
-                        {edificio}
-                      </option>
-                    ))}
+                    {edificios.map((edificioObj) => (
+                        <option key={edificioObj.nombre_edificio} value={edificioObj.nombre_edificio}>
+                          {edificioObj.nombre_edificio}
+                        </option>
+                      ))}
                   </select>
                 </div>
 
@@ -192,9 +228,9 @@ const Ingresos = () => {
                       onChange={handleChange}
                       className="py-3 px-4 pr-9 block w-full border border-gray-300 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400"
                     >
-                      {departamentos.map(depto => (
-                        <option key={depto} value={depto}>
-                          {depto}
+                      {departamentos.map((depto, index) => (
+                        <option key={index} value={depto}>
+                          {depto === "No asignado" ? "No asignado" : depto}
                         </option>
                       ))}
                     </select>
@@ -388,6 +424,17 @@ function getGTMMinus4Date() {
   now.setMinutes(now.getMinutes() + timezoneOffset - desiredOffset);
 
   return now; // Retorna el objeto Date
+}
+
+// Función para formatear la fecha en el formato "DD/MM/AA HH:MM"
+function formatDateToDDMMAAHHMM(date) {
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Meses van de 0 a 11
+  const year = date.getFullYear().toString().substr(-2); // Solo los últimos dos dígitos
+  const hours = date.getHours().toString().padStart(2, '0');
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+
+  return `${day}/${month}/${year} ${hours}:${minutes}`;
 }
 
 export default Ingresos

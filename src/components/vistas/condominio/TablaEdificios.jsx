@@ -30,23 +30,35 @@ import { Delete, Edit } from '@mui/icons-material';
 import { data, states } from './makeData';
 
 const fetchBuildings = async () => {
-    const db = getFirestore(app);
-    const edificiosCol = collection(db, "edificios");
-    const edificioSnapshot = await getDocs(edificiosCol);
-    return edificioSnapshot.docs.map(doc => {
-        const data = doc.data();
-        return {
-            nombre_edificio: data.nombre_edificio,
-            cantidad_pisos: data.cantidad_pisos,
-            direccion: data.direccion,
-            celular: data.celular,
-            correo: data.correo,
-            telefono: `${data.telefono}`,
-            id: doc.id
-        };
-    });
-};
-
+    try {
+      // Haces una solicitud GET a tu API de Laravel
+      const response = await fetch('http://127.0.0.1:8000/api/edificios');
+      
+      // Verifica si la respuesta es satisfactoria
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      // Parsea la respuesta JSON
+      const edificios = await response.json();
+      
+      // Mapea los resultados a la estructura deseada, si es necesario
+      return edificios.map(edificio => ({
+        nombre_edificio: edificio.nombre_edificio,
+        cantidad_pisos: edificio.cantidad_pisos,
+        direccion: edificio.direccion,
+        celular: edificio.celular,
+        correo: edificio.correo,
+        telefono: `${edificio.telefono}`, // Asumiendo que quieres que sea un string
+        id: edificio.id
+        // No incluyes created_at ni updated_at a menos que los necesites
+      }));
+      
+    } catch (error) {
+      console.error('Error al obtener los edificios:', error);
+    }
+  };
+  
 
 
 
@@ -101,12 +113,32 @@ const TablaEdificios = () => {
     //Eliminar datos
 
     const deleteBuilding = async (id) => {
-        const db = getFirestore(app);
-        const edificioDoc = doc(db, "edificios", id);
-        await deleteDoc(edificioDoc);
-    };
-
-
+        try {
+          // Asegúrate de cambiar la URL base si es necesario
+          const response = await fetch(`http://127.0.0.1:8000/api/edificios/${id}`, {
+            method: 'DELETE', // Método HTTP para la operación de borrado
+            headers: {
+              // Incluye cualquier header que tu API necesite, por ejemplo:
+              'Content-Type': 'application/json',
+              // 'Authorization': 'Bearer tu_token_api', // Si usas autenticación
+            },
+            // No es necesario enviar body en una petición DELETE, a menos que tu API lo requiera por alguna razón específica
+          });
+      
+          // Verifica si la respuesta es satisfactoria
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          
+          // Puedes retornar algo o simplemente finalizar si la operación fue exitosa
+          return "Edificio eliminado con éxito";
+      
+        } catch (error) {
+          console.error('Error al eliminar el edificio:', error);
+          throw error; // Lanzar el error para manejarlo en una capa superior si es necesario
+        }
+      };
+      
     const handleDeleteRow = useCallback(
         async (row) => {
             if (!confirm(`Are you sure you want to delete ${row.getValue('nombre_edificio')}`)) {

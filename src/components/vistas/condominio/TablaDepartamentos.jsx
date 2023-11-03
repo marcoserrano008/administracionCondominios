@@ -30,25 +30,32 @@ import { Delete, Edit } from '@mui/icons-material';
 import { data, states } from './makeData';
 
 const fetchBuildings = async () => {
-    const db = getFirestore(app);
-    const departamentosCol = collection(db, "departamentos");
-    const departamentoSnapshot = await getDocs(departamentosCol);
-    return departamentoSnapshot.docs.map(doc => {
-        const data = doc.data();
-        return {
-            edificio: data.edificio,
-            numeroDepartamento: data.numeroDepartamento,
-            estado:data.estado,
-            telefono: data.telefono,
-            celular: data.celular,
-            dormitorios: data.dormitorios,
-            baños: data.baños,
-            garaje: data.garaje,
-            superficie: data.superficie,
-            id: doc.id
-        };
-    });
-};
+    try {
+      const response = await fetch('http://127.0.0.1:8000/api/departamentos');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const departamentos = await response.json();
+      
+      // Mapear los resultados para ajustarlos a la estructura que tu aplicación espera
+      return departamentos.map(dep => ({
+        id: dep.id,
+        numeroDepartamento: dep.numeroDepartamento,
+        edificio: dep.edificio,
+        estado: dep.estado,
+        dormitorios: dep.dormitorios,
+        baños: dep.banios, // Asegúrate de usar la misma clave que en tu API
+        celular: dep.celular,
+        garaje: dep.garaje,
+        superficie: dep.superficie,
+        telefono: dep.telefono,
+      }));
+  
+    } catch (error) {
+      console.error("Error fetching buildings: ", error);
+      return []; // Devolver un array vacío o manejar el error como creas conveniente
+    }
+  };
 
 
 
@@ -79,22 +86,37 @@ const TablaDepartamentos = () => {
     //Editar los datos
 
     const updateBuilding = async (id, updatedBuilding) => {
-        const db = getFirestore(app);
-        const departamentosDoc = doc(db, "departamentos", id);
-        await updateDoc(departamentosDoc, updatedBuilding);
-    };
+        try {
+          const response = await fetch(`http://127.0.0.1:8000/api/departamentos/${id}`, {
+            method: 'PUT', // o 'PATCH' si tu API está configurada para ello
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updatedBuilding),
+          });
+          
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          
+          return await response.json(); // Si tu API devuelve el objeto actualizado
+      
+        } catch (error) {
+          console.error("Error updating building: ", error);
+        }
+      };
 
     
 
-    const handleSaveRowEdits = async ({ exitEditingMode, row, values }) => {
-        if (!Object.keys(validationErrors).length) {
-            await updateBuilding(row.original.id, values);
-            tableData[row.index] = values;
-            //send/receive api updates here, then refetch or update local table data for re-render
-            setTableData([...tableData]);
-            exitEditingMode(); //required to exit editing mode and close modal
+      const handleSaveRowEdits = async ({ exitEditingMode, row, values }) => {
+        // Aquí deberías realizar la validación de tus datos o la lógica de negocio correspondiente
+        const updatedData = await updateBuilding(row.original.id, values);
+        if (updatedData) {
+          tableData[row.index] = updatedData; // Si tu API devuelve el objeto actualizado
+          setTableData([...tableData]);
+          exitEditingMode(); // Salir del modo de edición
         }
-    };
+      };
 
     const handleCancelRowEdits = () => {
         setValidationErrors({});
@@ -104,23 +126,37 @@ const TablaDepartamentos = () => {
     //Eliminar datos
 
     const deleteBuilding = async (id) => {
-        const db = getFirestore(app);
-        const departamentosDoc = doc(db, "departamentos", id);
-        await deleteDoc(departamentosDoc);
-    };
+        try {
+          const response = await fetch(`http://127.0.0.1:8000/api/departamentos/${id}`, {
+            method: 'DELETE',
+          });
+          
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+      
+          return true; // Devuelve true si la eliminación fue exitosa
+      
+        } catch (error) {
+          console.error("Error deleting building: ", error);
+          return false; // Devuelve false si hubo un error
+        }
+      };
 
 
-    const handleDeleteRow = useCallback(
+      const handleDeleteRow = useCallback(
         async (row) => {
-            if (!confirm(`Are you sure you want to delete ${row.getValue('numeroDepartamento')}`)) {
-                return;
-            }
-            await deleteBuilding(row.original.id);
+          if (!confirm(`¿Está seguro de que desea eliminar?`)) {
+            return;
+          }
+          const isSuccess = await deleteBuilding(row.original.id);
+          if (isSuccess) {
             tableData.splice(row.index, 1);
-            setTableData([...tableData]);
+            setTableData([...tableData]); // Actualiza los datos de la tabla
+          }
         },
         [tableData],
-    );
+      );
 
     
     const createHeaders = (keys) => {

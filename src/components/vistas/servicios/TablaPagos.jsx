@@ -28,35 +28,40 @@ import {
 import { Delete, Edit } from '@mui/icons-material';
 import { Link, useNavigation } from 'react-router-dom';
 import { db } from "../../../firebase";
-
 const fetchBuildings = async () => {
-    const db = getFirestore(app);
-    const cobroServicioCol = collection(db, "pagoServicios");
-    const cobroServicionapshot = await getDocs(cobroServicioCol);
+    try {
+        // Realizar la solicitud a tu API
+        const response = await fetch('http://127.0.0.1:8000/api/pago-servicios');
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const pagoServicios = await response.json();
 
-    const results = await Promise.all(cobroServicionapshot.docs.map(async doc => {
-        const data = doc.data();
-        const serviceName = await getServiceName(data.servicio);
+        // Mapear los datos recibidos al formato deseado
+        const results = pagoServicios.map((item) => {
+            // Convertir la fecha de string a Date y luego a una representación legible
+            const date = new Date(item.fechaHoraPago);
+            const formattedDate = date.toLocaleDateString(); //+ ' ' + date.toLocaleTimeString();
 
-        // Convertir Timestamp a Date y luego a una representación legible
-        const date = data.fechaHoraPago.toDate();
-        const formattedDate = date.toLocaleDateString() //+ ' ' + date.toLocaleTimeString();
+            return {
+                serviceName: item.servicio, // Asumiendo que servicio contiene el nombre o puedes hacer una solicitud adicional para conseguir el nombre si es necesario
+                idServicio: item.id, // O cualquier otro identificador si 'servicio' no es el ID
+                edificio: item.edificio,
+                departamento: item.numeroDepartamento,
+                costo: item.costo,
+                cobro: item.cobro,
+                fechaHoraPago: formattedDate,
+                id: item.id
+            };
+        });
 
-        return {
-            serviceName: serviceName,
-            idServicio: data.servicio,
-            edificio: data.edificio,
-            departamento: data.numeroDepartamento,
-            costo: data.costo,
-            cobro: data.cobro,
-            fechaHoraPago: formattedDate,
-            id: doc.id
-        };
-    }));
+        return results;
 
-    return results;
+    } catch (error) {
+        console.error("Error fetching payment services: ", error);
+        // Manejar el error adecuadamente en tu UI
+    }
 };
-
 
 const getServiceName = async (idServicio) => {
     const db = getFirestore(app);
@@ -119,25 +124,37 @@ const TablaPagos = () => {
 
 
     //Eliminar datos
-
     const deleteBuilding = async (id) => {
-        const db = getFirestore(app);
-        const cobroServicioDoc = doc(db, "pagoServicios", id);
-        await deleteDoc(cobroServicioDoc);
-    };
-
-
-    const handleDeleteRow = useCallback(
+        try {
+          const response = await fetch(`http://127.0.0.1:8000/api/pago-servicios/${id}`, {
+            method: 'DELETE', // Método HTTP para la operación DELETE
+            // Aquí podrías añadir headers si tu API requiere, como tokens de autenticación
+          });
+      
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+      
+          console.log("Building deleted successfully");
+        } catch (error) {
+          console.error("Error deleting building: ", error);
+          // Manejar el error adecuadamente en tu UI
+        }
+      };
+      
+      const handleDeleteRow = useCallback(
         async (row) => {
-            if (!confirm(`Are you sure you want to delete ${row.getValue('nombre')}`)) {
-                return;
-            }
-            await deleteBuilding(row.original.id);
-            tableData.splice(row.index, 1);
-            setTableData([...tableData]);
+          if (!window.confirm(`Confirmar para eliminar`)) {
+            return;
+          }
+          await deleteBuilding(row.original.id);
+          // Filtrar el dato eliminado en lugar de usar splice, para evitar mutar el estado directamente
+          const newData = tableData.filter((item) => item.id !== row.original.id);
+          setTableData(newData);
         },
-        [tableData],
-    );
+        [tableData, setTableData], // Añade setTableData como dependencia si estás usando React 18+
+      );
+      
 
 
     const createHeaders = (keys) => {
@@ -282,12 +299,8 @@ const TablaPagos = () => {
                 onEditingRowSave={handleSaveRowEdits}
                 onEditingRowCancel={handleCancelRowEdits}
                 renderRowActions={({ row, table }) => (
-                    <Box sx={{ display: 'flex', gap: '1rem' }}>
-                        <Tooltip arrow placement="left" title="Edit">
-                            <IconButton onClick={() => table.setEditingRow(row)}>
-                                <Edit />
-                            </IconButton>
-                        </Tooltip>
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+
                         <Tooltip arrow placement="right" title="Delete">
                             <IconButton color="error" onClick={() => handleDeleteRow(row)}>
                                 <Delete />

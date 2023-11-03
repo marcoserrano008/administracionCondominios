@@ -73,9 +73,61 @@ const RegistrarUsuario = () => {
     }
   };
 
+  
   const [errorMessage, setErrorMessage] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [role, setRole] = useState('usuario');  // Por defecto será 'usuario'
+
+
+  
+const handleRegister = async (e) => {
+  e.preventDefault();
+  if (password.length < 8) {
+    setErrorMessage('La contraseña debe tener al menos 8 caracteres.');
+    return;
+  }
+
+  // Validación para solo letras y longitud máxima:
+  const lettersOnlyRegex = /^[a-zA-ZñÑáéíóúÁÉÍÓÚ\s]+$/;
+
+  if (!lettersOnlyRegex.test(nombre) || nombre.length > 50) {
+    setErrorMessage('El nombre debe contener solo letras y tener un máximo de 50 caracteres.');
+    return;
+  }
+
+  if (!lettersOnlyRegex.test(apellidoPaterno) || apellidoPaterno.length > 30) {
+    setErrorMessage('El apellido paterno debe contener solo letras y tener un máximo de 30 caracteres.');
+    return;
+  }
+
+  if (!lettersOnlyRegex.test(apellidoMaterno) || apellidoMaterno.length > 30) {
+    setErrorMessage('El apellido materno debe contener solo letras y tener un máximo de 30 caracteres.');
+    return;
+  }
+  if (password !== confirmPassword) {
+    setErrorMessage('Las contraseñas no coinciden.');
+    return;
+  }
+
+  try {
+    const inputs = {
+      email: email,
+      password: password,
+      name: nombre,
+      apellidoPaterno: apellidoPaterno,
+      apellidoMaterno: apellidoMaterno,
+      rol: role, 
+    }
+    const response = await axios.post('http://127.0.0.1:8000/api/register', inputs);
+    console.log(response.data);
+    navigate('/usuarios');
+    // Aquí puedes manejar la redirección o actualización de estado post-registro.
+  } catch (error) {
+    console.error(error.response.data);
+  }
+};
+
+
 
   return (
     <>
@@ -88,7 +140,7 @@ const RegistrarUsuario = () => {
                 <h1 className="block text-2xl font-bold text-gray-800 dark:text-white">Registrar Usuario</h1>
                 <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
 
-                  <form onSubmit={handleSubmit}>
+                  <form onSubmit={handleRegister}>
 
                     <div className="grid gap-y-4 mt-2">
                       <div>
